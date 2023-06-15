@@ -1,41 +1,53 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: junik <abderrachidyassir@gmail.com>        +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/03/14 12:11:22 by ayassir           #+#    #+#              #
-#    Updated: 2023/06/15 11:56:13 by junik            ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+NAME		= 	ircserv
 
-NAME		= ircserv
+OBJDIR		=	Other
 
-CC			= c++
+SRCDIR		=	Sources
 
-STD			= -std=c++98
+CC			= 	c++
 
-SRC			= main.cpp ircserv.cpp
+STD			= 	-std=c++98
 
-INC			= ircserv.hpp 
+CXXFLAGS	= 	-Wall -Wextra -Werror
 
-OBJ			= $(SRC:.cpp=.o) 
+SRC			= 	main.cpp \
 
-CXXFLAGS	= -Wall -Wextra -Werror
+INC			= 	Includes/ircserv.hpp 
+
+OBJ			= 	$(addprefix $(OBJDIR)/, $(SRC:%.cpp=%.o))
+
+##### COLORS ####################
+WHITE		=	"\033[m"        #
+RED			=	"\033[1;31m"    #
+GREEN		=	"\033[1;32m"    #
+YELLOW		=	"\033[1;33m"    #
+BLUE		=	"\033[1;34m"    #
+PURPLE		=	"\033[1;35m"    #
+CYAN		=	"\033[1;36m"    #
+EOC			=	"\033[0;0m"     #
+LINE_CLEAR	=	"\x1b[1A\x1b[M" #
+#################################
 
 all : $(NAME) 
 
 $(NAME) : $(OBJ)
-	$(CC) $(CXXFLAGS) $(STD) $(OBJ) -o $(NAME) 
+	@echo $(GREEN) "Source files are compiled!\n" $(EOC)
+	@echo $(WHITE) "Building $(NAME) for"$(YELLOW)"Mandatory"$(WHITE)"..." $(EOC)
+	@$(CC) $(CXXFLAGS) $(STD) $(OBJ) -o $(NAME)
+	@echo $(GREEN) "$(NAME) is created!\n" $(EOC) 
 
-%.o : %.cpp $(INC)
-	$(CC) $(CXXFLAGS) -c $< -o $@ 
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(INC)
+	@echo $(YELLOW) "Compiling...\t" $< $(EOC) $(LINE_CLEAR)
+	@mkdir -p Other
+	@$(CC) $(CXXFLAGS) -c $< -o $@ 
 
 clean :
-	rm -rf $(OBJ) 
+	@rm -rf $(OBJ)
+	@echo $(RED) "Object files are cleaned!" $(EOC) 
 
 fclean : clean
-	rm -rf $(NAME) 
+	@rm -rf $(NAME)
+	@rm -rf $(OBJDIR)
+	@echo $(RED) "$(NAME) is removed!" $(EOC) 
 
 re : fclean all 
