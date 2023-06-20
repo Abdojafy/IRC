@@ -10,7 +10,7 @@ STD			= 	-std=c++98
 
 CXXFLAGS	= 	-Wall -Wextra -Werror
 
-SRC			= 	main.cpp \
+SRC			= 	main.cpp parsing.cpp\
 
 INC			= 	Includes/ircserv.hpp 
 

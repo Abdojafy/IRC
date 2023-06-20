@@ -1,2 +1,2 @@
 # ft_irc
-#####- [...] server using socket programming.
+- [...] server using socket programming.
