@@ -1,53 +1,35 @@
-NAME		= 	ircserv
+NAME =  ircserv
 
-OBJDIR		=	Other
+OBJECTS = objects
 
-SRCDIR		=	Sources
+HEADERS = $(wildcard inc/*.hpp)
 
-CC			= 	c++
+INC = inc/
 
-STD			= 	-std=c++98
+C++ = c++
 
-CXXFLAGS	= 	-Wall -Wextra -Werror
+CPP_FLAGS = -Wall -Wextra -Werror -std=c++98 -I$(INC)
 
-SRC			= 	main.cpp parsing.cpp\
+SRC =	$(wildcard *.cpp) $(wildcard src/*.cpp) $(wildcard src/**/*.cpp)
 
-INC			= 	Includes/ircserv.hpp 
+OBJ =  $(addprefix objects/, $(SRC:.cpp=.o))
 
-OBJ			= 	$(addprefix $(OBJDIR)/, $(SRC:%.cpp=%.o))
-
-##### COLORS ####################
-WHITE		=	"\033[m"        #
-RED			=	"\033[1;31m"    #
-GREEN		=	"\033[1;32m"    #
-YELLOW		=	"\033[1;33m"    #
-BLUE		=	"\033[1;34m"    #
-PURPLE		=	"\033[1;35m"    #
-CYAN		=	"\033[1;36m"    #
-EOC			=	"\033[0;0m"     #
-LINE_CLEAR	=	"\x1b[1A\x1b[M" #
-#################################
-
-all : $(NAME) 
-
+all: $(NAME)
 $(NAME) : $(OBJ)
-	@echo $(GREEN) "Source files are compiled!\n" $(EOC)
-	@echo $(WHITE) "Building $(NAME) for"$(YELLOW)"Mandatory"$(WHITE)"..." $(EOC)
-	@$(CC) $(CXXFLAGS) $(STD) $(OBJ) -o $(NAME)
-	@echo $(GREEN) "$(NAME) is created!\n" $(EOC) 
+	@$(C++) $(CPP_FLAGS) $(OBJ) -o $(NAME)
+	@echo "\033[1;32m    Successfully Maked    \033[0m"
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(INC)
-	@echo $(YELLOW) "Compiling...\t" $< $(EOC) $(LINE_CLEAR)
-	@mkdir -p Other
-	@$(CC) $(CXXFLAGS) -c $< -o $@ 
+$(OBJECTS)/%.o: %.cpp $(HEADERS)
+	@mkdir -p $(@D)
+	@$(C++) $(CPP_FLAGS) -c $< -o $@
+	
+clean:
+	@rm -rf $(OBJECTS)
+	@echo "\033[1;31m    Cleaned    \033[0m"
 
-clean :
-	@rm -rf $(OBJ)
-	@echo $(RED) "Object files are cleaned!" $(EOC) 
-
-fclean : clean
+fclean: clean
 	@rm -rf $(NAME)
-	@rm -rf $(OBJDIR)
-	@echo $(RED) "$(NAME) is removed!" $(EOC) 
 
-re : fclean all 
+re: fclean all
+
+.PHONY : re fclean clean all

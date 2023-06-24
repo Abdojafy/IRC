@@ -1,26 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   ircserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: junik <abderrachidyassir@gmail.com>        +#+  +:+       +#+        */
+/*   By: ozahid- <ozahid-@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/15 11:52:54 by junik             #+#    #+#             */
-/*   Updated: 2023/06/15 12:46:38 by junik            ###   ########.fr       */
+/*   Created: 2023/06/15 11:57:39 by junik             #+#    #+#             */
+/*   Updated: 2023/06/24 15:21:48 by ozahid-          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ircserv.hpp"
+#include <iostream>
+#include <exception>
 
-void	start(string port, string password)
-{
-	
-}
+int	handle_port(std::string port_);
+bool	handle_password(std::string password_);
 
-int	main(int ac, char **av)
-{
-	if (ac == 3)
-		start(av[1], av[2]);
-	else
-		throw(runtime_error("Error\n"));
-}
+using namespace std;

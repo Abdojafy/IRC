@@ -1,4 +1,4 @@
-#include "../Includes/ircserv.hpp"
+#include "ircserv.hpp"
 
 bool	is_digit(std::string str)
 {
