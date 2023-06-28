@@ -19,3 +19,23 @@ Socket::~Socket()
 {
 
 }
+
+sockaddr_in Socket::get_address()
+{
+	return address;
+}
+
+int Socket::get_socketfd()
+{
+	return socket_fd;
+}
+
+int Socket::get_connection()
+{
+	return connection;
+}
+
+void Socket::set_connection(int connect)
+{
+	connection = connect;
+}
