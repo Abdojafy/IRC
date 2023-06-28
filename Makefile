@@ -2,7 +2,7 @@ NAME =  ircserv
 
 OBJECTS = objects
 
-HEADERS = $(wildcard inc/*.hpp)
+HEADERS = $(wildcard inc/*.hpp) $(wildcard src/**/*.hpp) $(wildcard src/httpserver/**/*.hpp);
 
 INC = inc/
 
@@ -10,7 +10,7 @@ C++ = c++
 
 CPP_FLAGS = -Wall -Wextra -Werror -std=c++98 -I$(INC)
 
-SRC =	$(wildcard *.cpp) $(wildcard src/*.cpp) $(wildcard src/**/*.cpp) $(wildcard src/**/**/*.cpp)
+SRC =	$(wildcard *.cpp) $(wildcard src/*.cpp) $(wildcard src/**/*.cpp) $(wildcard src/httpserver/**/*.cpp);
 
 OBJ =  $(addprefix objects/, $(SRC:.cpp=.o))
 
