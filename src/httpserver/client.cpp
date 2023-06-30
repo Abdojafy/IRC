@@ -6,6 +6,7 @@ Client::Client()
 }
 
 int Client::start_client(){
+	char av[10000];
 	char buffer[30000] = {0};
 	client_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (client_fd < 0){
@@ -25,10 +26,15 @@ int Client::start_client(){
 		perror("connect");
 		return (-1);
 	}
-	send (client_fd, "hello from client", 17, 0);
-	std::cout<<"hello from client sent"<<std::endl;
-	int readresult = read(client_fd, buffer, 30000);
-	std::cout<<buffer<<std::endl;
+	std::string str;
+	while (1){
+		std::cin >> str;
+		send (client_fd, str.c_str(), 10000, 2);
+		std::cout<<"Client Sent : "<<str<<std::endl;
+		int readresult = read(client_fd, buffer, 30000);
+		std::cout<<buffer<<std::endl;
+		str.clear();
+	}
 	return (0);
 }
 

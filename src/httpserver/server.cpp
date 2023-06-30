@@ -10,7 +10,7 @@ Server::Server()
 		exit(1);
 	}
 	address.sin_family = AF_INET;
-	address.sin_addr.s_addr = INADDR_ANY;
+	address.sin_addr.s_addr = htonl(INADDR_ANY);
 	address.sin_port = htons(8080);
 	memset(address.sin_zero, '\0', sizeof(address.sin_zero));
 	if (bind(server_fd, (struct sockaddr *)&address, adrlen) < 0)
@@ -18,7 +18,7 @@ Server::Server()
 		perror("bind");
 		exit (1);
 	}
-	if (listen(server_fd, 10) < 0)
+	if (listen(server_fd, 1) < 0)
 	{
 		perror("listen");
 		exit(1);
@@ -32,10 +32,9 @@ Server::Server()
 			exit (1);
 		}
 		char buffer[30000] = {0};
-		readresult = read(acpt, buffer, 30000);
-		std::cout<<buffer<<std::endl;
-		write(acpt, "hello from server", 17);
-		std::cout<<"---------------------hello msg sent-----------------"<<std::endl;
+		readresult = recv(acpt, buffer, 30000, 0);
+		std::cout<<"Client Says : "<<buffer<<std::endl;
+		write(acpt, "Server Recived", 17);
 		close(acpt);
 	}
 }

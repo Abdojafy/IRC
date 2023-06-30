@@ -1,5 +1,5 @@
-#include "ircserv.hpp"
+// #include "ircserv.hpp"
 
-int main(int ac, char **av){
+// int main(int ac, char **av){
 	
-}
+// }

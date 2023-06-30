@@ -4,3 +4,5 @@ ircserv
 objects
 *.o
 README.md
+server
+client
