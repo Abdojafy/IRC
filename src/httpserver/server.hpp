@@ -1,16 +1,20 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include "ircserv.hpp"
+#include "../../inc/ircserv.hpp"
 
-class Server: Socket{
+class Server{
 public:
-	
+	Server();
 	~Server();
 
 
 private:
-
+	int		server_fd;
+	struct	sockaddr_in address;
+	int		acpt;
+	int		adrlen;
+	int		readresult;
 };
 
 #endif
