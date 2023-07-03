@@ -20,6 +20,7 @@ int	parce_port(char *str){
 Server::Server(char **av)
 {
 	port = parce_port(av[1]);
+	password = av[2];
 	if (port == -1)
 	{
 		std::cout<<"Invalid Port"<<std::endl;
@@ -49,6 +50,7 @@ Server::Server(char **av)
 	const char* response;
 	int recvresult;
 	int sendresult;
+    response = "hello from server";
 	while (1){
 		adrlen = sizeof(addr_client);
 		client_socket = accept(server_socket, (struct sockaddr *)&addr_client, (socklen_t*)&adrlen);
@@ -57,13 +59,13 @@ Server::Server(char **av)
 			perror("accept");
 			exit (1);
 		}
+		Client(addr_client, client_socket);
     	recvresult = recv(client_socket, buffer, bufferSize - 1, 0);
     	if (recvresult < 0) {
     	    perror("recv");
     	    exit(1);
     	}
-    	response = "hello from server";
-    	 sendresult= send(client_socket, response, strlen(response), 0);
+    	sendresult= send(client_socket, response, strlen(response), 0);
     	if (sendresult < 0) {
     	    perror("send");
     	    exit(1);
