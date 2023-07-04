@@ -33,7 +33,7 @@ void Server::create_bind_listen(int port)
 		perror("bind");
 		exit (1);
 	}
-	if (listen(server_socket, 1) < 0)
+	if (listen(server_socket, 5) < 0)
 	{
 		perror("listen");
 		exit(1);
@@ -52,11 +52,12 @@ Server::Server(char **av)
 		exit(1);
 	}
 	create_bind_listen(port);
-    char buffer[bufferSize];
+    char buffer[BUFFERSIZE];
 	const char* response;
 	int recvresult;
 	int sendresult;
     response = "hello from server";
+	int i = 0;
 	while (1){
 		adrlen = sizeof(addr_client);
 		client_socket = accept(server_socket, (struct sockaddr *)&addr_client, (socklen_t*)&adrlen);
@@ -65,9 +66,9 @@ Server::Server(char **av)
 			perror("accept");
 			exit (1);
 		}
-		Client(addr_client, client_socket);
-		bzero(buffer, bufferSize - 1);
-    	recvresult = recv(client_socket, buffer, bufferSize - 1, 0);
+		client[i] = Client(addr_client, client_socket);
+		bzero(buffer, BUFFERSIZE - 1);
+    	recvresult = recv(client_socket, buffer, BUFFERSIZE - 1, 0);
     	if (recvresult < 0) {
     	    perror("recv");
     	    exit(1);
@@ -79,6 +80,7 @@ Server::Server(char **av)
     	    exit(1);
     	}
     	close(client_socket);
+		i++;
 	}
 	close(server_socket);
 }

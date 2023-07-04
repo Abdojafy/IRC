@@ -3,7 +3,9 @@
 
 #include "ircserv.hpp"
 #include "client.hpp"
-#define bufferSize 1024
+
+#define BUFFERSIZE	1024
+#define MAXCLIENTS	1000
 
 class Server{
 public:
@@ -14,13 +16,16 @@ public:
 	void	handle_client();
 
 private:
+	Client client[MAXCLIENTS];
 	int			server_socket;
 	int			client_socket;
+	int			poll_fd;
 	int			port;
+	int			adrlen;
 	std::string	password;
 	struct	sockaddr_in addr_server;
 	struct	sockaddr_in addr_client;
-	int		adrlen;
+	struct	pollfd fds[MAXCLIENTS];
 };
 int	parce_port(char *str);
 bool is_it_digits(std::string str);
