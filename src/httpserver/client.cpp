@@ -1,4 +1,7 @@
 #include "client.hpp"
+Client::Client(){
+
+}
 
 Client::Client(sockaddr_in addr, int fd)
 {
@@ -23,4 +26,5 @@ Client &Client::operator=(const Client &other)
 		address.sin_zero[i] = other.address.sin_zero[i];
 		i++;
 	}
+	return (*this);
 }

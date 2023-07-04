@@ -7,6 +7,7 @@
 #define BUFFERSIZE	1024
 #define MAXCLIENTS	1000
 
+#include "client.hpp"
 class Server{
 public:
 	Server(char **av);

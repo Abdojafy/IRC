@@ -66,7 +66,8 @@ Server::Server(char **av)
 			perror("accept");
 			exit (1);
 		}
-		client[i] = Client(addr_client, client_socket);
+		Client cl(addr_client, client_socket);
+		client[i] = cl;
 		bzero(buffer, BUFFERSIZE - 1);
     	recvresult = recv(client_socket, buffer, BUFFERSIZE - 1, 0);
     	if (recvresult < 0) {
