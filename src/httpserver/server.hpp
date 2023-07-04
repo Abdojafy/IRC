@@ -10,6 +10,8 @@ public:
 	Server(char **av);
 	~Server();
 
+	void	create_bind_listen(int port);
+	void	handle_client();
 
 private:
 	int			server_socket;

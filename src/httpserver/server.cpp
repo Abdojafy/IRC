@@ -17,16 +17,8 @@ int	parce_port(char *str){
 	return (nb);
 }
 
-Server::Server(char **av)
+void Server::create_bind_listen(int port)
 {
-	port = parce_port(av[1]);
-	password = av[2];
-	if (port == -1)
-	{
-		std::cout<<"Invalid Port"<<std::endl;
-		exit(1);
-	}
-	adrlen = sizeof(addr_server);
 	server_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (server_socket < 0)
 	{
@@ -46,6 +38,20 @@ Server::Server(char **av)
 		perror("listen");
 		exit(1);
 	}
+}
+
+
+
+Server::Server(char **av)
+{
+	port = parce_port(av[1]);
+	password = av[2];
+	if (port == -1)
+	{
+		std::cout<<"Invalid Port"<<std::endl;
+		exit(1);
+	}
+	create_bind_listen(port);
     char buffer[bufferSize];
 	const char* response;
 	int recvresult;
@@ -60,11 +66,13 @@ Server::Server(char **av)
 			exit (1);
 		}
 		Client(addr_client, client_socket);
+		bzero(buffer, bufferSize - 1);
     	recvresult = recv(client_socket, buffer, bufferSize - 1, 0);
     	if (recvresult < 0) {
     	    perror("recv");
     	    exit(1);
     	}
+		std::cout<<"client says : "<<buffer<<std::endl;
     	sendresult= send(client_socket, response, strlen(response), 0);
     	if (sendresult < 0) {
     	    perror("send");
@@ -79,4 +87,3 @@ Server::~Server()
 {
 
 }
-
