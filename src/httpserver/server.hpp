@@ -17,7 +17,6 @@ public:
 	void	handle_client();
 
 private:
-	Client client[MAXCLIENTS];
 	int			server_socket;
 	int			client_socket;
 	int			poll_fd;
@@ -27,6 +26,8 @@ private:
 	struct	sockaddr_in addr_server;
 	struct	sockaddr_in addr_client;
 	struct	pollfd fds[MAXCLIENTS];
+	std::map<int, Client> client_map;
+	std::vector<pollfd> pfds;
 };
 int	parce_port(char *str);
 bool is_it_digits(std::string str);
