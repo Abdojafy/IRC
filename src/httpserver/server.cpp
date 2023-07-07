@@ -41,14 +41,20 @@ void Server::create_bind_listen(int port)
 	}
 }
 
-
+int Server::get_clientnumber()
+{
+	int len = 0;
+	
+	for(PollIter it = poll_fds.begin(); it < poll_fds.end(); it++)
+		len++;
+	return (len);
+}
 
 Server::Server(char **av)
 {
-	int	clients = 0;
-	std::vector<int> cfds;
-	std::vector<int>::iterator cit = cfds.begin();
-	std::vector<struct pollfd>::iterator it;
+	int	clients = 1;
+	PollIter	first_fd;
+	ClientIter	client_iter;
 	port = parce_port(av[1]);
 	password = av[2]; 
 	if(password.empty()){
@@ -63,55 +69,52 @@ Server::Server(char **av)
 	create_bind_listen(port);
 	fds[0].fd = server_socket;
 	fds[0].events = POLLIN;
-	clients++;
-    char buffer[BUFFERSIZE];
-	const char* response;
-	// int recvresult;
-	// int sendresult;
-    response = "hello from server";
-	it = pfds.begin();
-	pfds.push_back(fds[0]);
+	poll_fds.push_back(fds[0]);
+	first_fd = poll_fds.begin();
 	while (1){
-		poll_fd = poll(pfds.data(), clients, -1);
+		poll_fd = poll(poll_fds.data(), clients, -1);
 		if (poll_fd < 0){
 			perror("poll");
 			exit(1);
 		}
-		for (int i = 0; i < clients; i++){
-			if (fds[i].events & POLLIN && fds[i].fd == server_socket){
-				adrlen = sizeof(addr_client);
-				client_socket = accept(server_socket, (struct sockaddr *)&addr_client, (socklen_t*)&adrlen);
-				if (client_socket < 0)
-				{
-					perror("accept");
-					exit (1);
+		for (PollIter it = poll_fds.begin(); it < poll_fds.end(); ++it){
+				if (first_fd->revents == POLLIN){
+					adrlen = sizeof(addr_client);
+					client_socket = accept(server_socket, (struct sockaddr *)&addr_client, (socklen_t*)&adrlen);
+					if (client_socket < 0)
+					{
+						perror("accept");
+						exit (1);
+					}
+					if (clients < MAXCLIENTS)
+					{
+						poll_fds.data()[clients].events = POLLIN;
+						poll_fds.data()[clients].fd  = client_socket;
+						poll_fds.push_back(poll_fds.data()[clients]);
+						clients++;
+						std::cout<<"new connection from client : "<<inet_ntoa(addr_client.sin_addr)<<"  in port : "<<htons(port)<<std::endl;
+						send(client_socket, "wellcome to the server\n", 23, 0);
+						clients_map.insert(std::make_pair(client_socket, Client(addr_client, client_socket)));
+					}
 				}
-				if (clients < MAXCLIENTS)
-				{
-					cfds.push_back(client_socket);
-					fds[clients].events = POLLIN;
-					pfds.push_back(fds[clients]);
-					std::cout<<"new connection from client : "<<inet_ntoa(addr_client.sin_addr)<<"  in port : "<<htons(port)<<std::endl;
-					send(client_socket, "wellcome to the server", 22, 0);
-					client_map.insert(std::make_pair(client_socket, Client(addr_client, client_socket)));
-				}
-			}
-			else{
 				int recv_len = recv(client_socket, buffer, BUFFERSIZE, 0);
-                if (recv_len <= 0) {
-                    // Connection closed or error occurred
-                    printf("Client %d disconnected\n", i);
+                if (it->revents == POLLHUP) {
+					it->events = 0;
+					client_iter = clients_map.find(client_socket);
+					clients_map.erase(client_iter);
+					for (PollIter it = poll_fds.begin() + 1; it < poll_fds.end(); it++){
+						if(it->fd == client_socket)
+							poll_fds.erase(it);
+					}
+                    printf("Client disconnected\n");
                     close(client_socket);
-					pfds.erase(it);
-					cfds.erase(cit);
 				}
 				else{
 					buffer[recv_len] = '\0';
-                    printf("Received from client %d: %s", i, buffer);
+                    printf("Received from client : %s", buffer);
                     send(client_socket, "Message received\n", 17, 0);
 				}
 			}
-		}
 	}
 	close(server_socket);
 }
