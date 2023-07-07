@@ -25,9 +25,9 @@ public:
 private:
 	int			server_socket;
 	int			client_socket;
-	int			poll_fd;
+	int			poll_result;
 	int			port;
-	int			adrlen;
+	int			client_addr_len;
 	std::string	password;
 	char 		buffer[BUFFERSIZE];
 	ClientMap	clients_map;
