@@ -96,7 +96,7 @@ Server::Server(char **av)
 					accept_new_client();
 				}else{
 					if (it->revents & (POLLHUP | POLL_ERR)){
-						//hna fin kanmsa7 lclient mn clientsmap 
+						//hna fin kanmsa7 lclient mn clientsmap ma3raftch wach at7tajoha fchi 7aja
 						printf("Client disconnected\n");
 						if (clients_map.size() > 0){
 							client_iter = clients_map.find(it->fd);
