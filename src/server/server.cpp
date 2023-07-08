@@ -94,6 +94,7 @@ Server::Server(char **av)
 					accept_new_client();
 				}else{
 					if (it->revents & (POLLHUP | POLL_ERR)){
+						//hna fin kanmsa7 lclient mn clientsmap 
 						printf("Client disconnected\n");
 						if (clients_map.size() > 0){
 							client_iter = clients_map.find(it->fd);
@@ -109,8 +110,9 @@ Server::Server(char **av)
 					else if (it->revents & POLLIN){
 						int recv_len = recv(it->fd, buffer, BUFFERSIZE, 0);
 						buffer[recv_len] = '\0';
+						//ay haja rseltiha  mn lclient atl9aha fhad lbuffer les command dima ayb9aw wjiwkom hna b7all "pass kick" wa majawarahoma
 						printf("Received from client : %s", buffer);
-
+						//hna fin t9dar tjawb lclient khdem bhad send li lta7t 3tiha it->fd o kteb lclient li bghiti
 						send(it->fd, "Message received\n", 17, 0);
 					}
 				}
