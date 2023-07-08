@@ -58,6 +58,7 @@ void Server::accept_new_client()
 		poll_fds.push_back(p);
 		std::cout<<"new connection from client : "<<inet_ntoa(addr_client.sin_addr)<<"  in port : "<<htons(port)<<std::endl;
 		send(client_socket, "wellcome to the server\n", 23, 0);
+		//hna fin kan3amer client data t9dar tzid ay haja fhadak paramitrised constructor o tmchi t3amerha flclient
 		clients_map.insert(std::make_pair(client_socket, Client(addr_client, client_socket)));
 	}
 }
@@ -91,6 +92,7 @@ Server::Server(char **av)
 			PollFds tmp = poll_fds;
 			for (PollIter it = tmp.begin(); it != tmp.end(); it++){
 				if (it->revents & POLLIN && it->fd == server_socket){
+					//ila kent kat9aleb fin t9dar tzid data f Client class dkhol lhad lfonction atl9ani mkhalli lk fiha comment
 					accept_new_client();
 				}else{
 					if (it->revents & (POLLHUP | POLL_ERR)){
