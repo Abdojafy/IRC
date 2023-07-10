@@ -16,10 +16,11 @@ public:
 	typedef std::map<int, Client>::iterator	ClientIter;
 	typedef std::map<int, Client>			ClientMap;
 
-	void	create_bind_listen(int port);
-	void	accept_new_client();
-	void	read_client_data(PollIter it);
-	void	set_pass_and_port(char **av);
+	void		create_bind_listen(int port);
+	void		accept_new_client();
+	void		read_client_data(PollIter it);
+	std::string	get_client_info();
+	void		set_pass_and_port(char **av);
 
 private:
 	int			server_socket;
@@ -29,6 +30,7 @@ private:
 	int			client_addr_len;
 	std::string	password;
 	char 		buffer[BUFFERSIZE];
+	std::string	client_msg;
 	ClientMap	clients_map;
 	PollFds 	poll_fds;
 	sockaddr_in addr_server;
