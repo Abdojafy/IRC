@@ -78,7 +78,7 @@ void Server::accept_new_client()
 
 void Server::read_client_data(PollIter it){
 	ClientIter client_iter;
-	std::string client_msg;
+
 	if (it->revents & (POLLHUP | POLL_ERR)){
 		printf("Client disconnected\n");
 		if (clients_map.size() > 0){
@@ -96,8 +96,8 @@ void Server::read_client_data(PollIter it){
 		bzero(buffer, BUFFERSIZE - 1);
 		int recv_len = recv(it->fd, buffer, BUFFERSIZE, 0);
 		buffer[recv_len] = '\0';
-		client_msg = get_client_info();
-		std::cout<<"Received from client : "<< client_msg<<std::endl;
+		get_client_info(it->fd);
+		std::cout<<"Received from client : "<<client_msg<<std::endl;
 		send(it->fd, "Message received\n", 17, 0);
 	}
 }
