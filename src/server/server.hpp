@@ -11,13 +11,15 @@ class Server{
 public:
 	Server(char **av);
 	~Server();
-	typedef std::vector<struct pollfd>::iterator	PollIter;
-	typedef std::vector<struct pollfd> 				PollFds;
-	typedef std::map<int, Client>::iterator			ClientIter;
-	typedef std::map<int, Client>					ClientMap;
+	typedef std::vector<pollfd>::iterator	PollIter;
+	typedef std::vector<pollfd> 			PollFds;
+	typedef std::map<int, Client>::iterator	ClientIter;
+	typedef std::map<int, Client>			ClientMap;
 
 	void	create_bind_listen(int port);
 	void	accept_new_client();
+	void	read_client_data(PollIter it);
+	void	set_pass_and_port(char **av);
 
 private:
 	int			server_socket;
@@ -29,8 +31,8 @@ private:
 	char 		buffer[BUFFERSIZE];
 	ClientMap	clients_map;
 	PollFds 	poll_fds;
-	struct		sockaddr_in addr_server;
-	struct		sockaddr_in addr_client;
+	sockaddr_in addr_server;
+	sockaddr_in addr_client;
 };
 int	parce_port(char *str);
 bool is_it_digits(std::string str);
