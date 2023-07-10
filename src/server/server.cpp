@@ -124,6 +124,7 @@ Server::Server(char **av)
 					//ila kent kat9aleb fin t9dar tzid data f Client class dkhol lhad lfonction atl9ani mkhalli lk fiha comment
 					accept_new_client();
 				}else{
+					//dkhol hna atl9ani mkhalli lek fin comments khassk tchofhom
 					read_client_data(it);
 				}
 			}
