@@ -41,8 +41,10 @@ void Server::create_bind_listen(int port)
 		perror("socket");
 		exit(1);
 	}
-	if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)) == -1)
+	if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)) == -1){
 		perror("setsocketopt");
+		exit(1);
+	}
 	addr_server.sin_family = AF_INET;
 	addr_server.sin_addr.s_addr = htonl(INADDR_ANY);
 	addr_server.sin_port = htons(port);
@@ -60,6 +62,7 @@ void Server::create_bind_listen(int port)
 
 void Server::accept_new_client()
 {
+	Client client;
 	client_addr_len = sizeof(addr_client);
 	client_socket = accept(server_socket, (sockaddr *)&addr_client, (socklen_t*)&client_addr_len);
 	if (client_socket < 0)
@@ -75,7 +78,8 @@ void Server::accept_new_client()
 		poll_fds.push_back(p);
 		std::cout<<"new connection from client : "<<inet_ntoa(addr_client.sin_addr)<<"  in port : "<<htons(port)<<std::endl;
 		send(client_socket, "wellcome to the server\n", 23, 0);
-		clients_map.insert(std::make_pair(client_socket, Client(addr_client, client_socket)));
+		client = Client(addr_client, client_socket);
+		clients_map.insert(std::make_pair(client_socket, client));
 	}
 }
 

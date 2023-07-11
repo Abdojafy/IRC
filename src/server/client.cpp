@@ -13,10 +13,14 @@ Client::~Client()
 {
 }
 
+sockaddr_in Client::get_client_address()
+{
+	return address;
+}
+
 Client &Client::operator=(const Client &other)
 {
 	int	i = 0;
-	std::cout<<"----------------client operator overload called----------------------------"<<std::endl;
 	client_socket = other.client_socket;
 	address.sin_addr = other.address.sin_addr;
 	address.sin_family = other.address.sin_family;
