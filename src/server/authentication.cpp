@@ -43,9 +43,7 @@ int Server::get_client_info(int fd)
 		send(fd, err_msg.c_str(), err_msg.length(), 0);
 		ss.clear();
 	}
-	if (!command.compare("USER"))
-	
-	{
+	// if (!command.compare("USER"))
 	return 0;
 }
 
