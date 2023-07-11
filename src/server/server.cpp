@@ -20,12 +20,15 @@ int	parce_port(char *str){
 
 void Server::create_bind_listen(int port)
 {
+	int option = 1;
 	server_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (server_socket < 0)
 	{
 		perror("socket");
 		exit(1);
 	}
+	if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)) == -1)
+		perror("setsocketopt");
 	addr_server.sin_family = AF_INET;
 	addr_server.sin_addr.s_addr = htonl(INADDR_ANY);
 	addr_server.sin_port = htons(port);
