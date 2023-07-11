@@ -11,8 +11,12 @@ public:
 
 	Client &operator=(const Client &other);
 private:
-	struct sockaddr_in address;
-	int		client_socket;
+	std::string user;
+	std::string	nick;
+	std::string pass;
+	int			client_socket;
+	struct		sockaddr_in address;
+
 };
 
 #endif

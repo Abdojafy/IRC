@@ -18,6 +18,20 @@ int	parce_port(char *str){
 	return (nb);
 }
 
+void Server::set_pass_and_port(char **av){
+	port = parce_port(av[1]);
+	password = av[2]; 
+	if(password.empty()){
+		std::cout<<"Please Enter A Valid Password"<<std::endl;
+		exit(1);
+	}
+	if (port == -1)
+	{
+		std::cout<<"Invalid Port"<<std::endl;
+		exit(1);
+	}
+}
+
 void Server::create_bind_listen(int port)
 {
 	int option = 1;
@@ -32,7 +46,7 @@ void Server::create_bind_listen(int port)
 	addr_server.sin_family = AF_INET;
 	addr_server.sin_addr.s_addr = htonl(INADDR_ANY);
 	addr_server.sin_port = htons(port);
-	if (bind(server_socket, (struct sockaddr *)&addr_server, sizeof(addr_server)) < 0)
+	if (bind(server_socket, (sockaddr *)&addr_server, sizeof(addr_server)) < 0)
 	{
 		perror("bind");
 		exit (1);
@@ -47,7 +61,7 @@ void Server::create_bind_listen(int port)
 void Server::accept_new_client()
 {
 	client_addr_len = sizeof(addr_client);
-	client_socket = accept(server_socket, (struct sockaddr *)&addr_client, (socklen_t*)&client_addr_len);
+	client_socket = accept(server_socket, (sockaddr *)&addr_client, (socklen_t*)&client_addr_len);
 	if (client_socket < 0)
 	{
 		perror("accept");
@@ -66,20 +80,35 @@ void Server::accept_new_client()
 	}
 }
 
+void Server::read_client_data(PollIter it){
+	ClientIter client_iter;
+	if (it->revents & (POLLHUP | POLL_ERR)){
+		//hna fin kanmsa7 lclient mn clientsmap ma3raftch wach at7tajoha fchi 7aja
+		printf("Client disconnected\n");
+		if (clients_map.size() > 0){
+			client_iter = clients_map.find(it->fd);
+			clients_map.erase(client_iter);
+		}
+		for (PollIter pit = poll_fds.begin(); pit < poll_fds.end(); pit++){
+			if(it->fd == pit->fd){
+				poll_fds.erase(pit);
+			}
+		}
+		close(it->fd);
+	}
+	else if (it->revents & POLLIN){
+		int recv_len = recv(it->fd, buffer, BUFFERSIZE, 0);
+		buffer[recv_len] = '\0';
+		//ay haja rseltiha  mn lclient atl9aha fhad lbuffer les command dima ayb9aw wjiwkom hna b7all "pass kick" wa majawarahoma
+		printf("Received from client : %s", buffer);
+		//hna fin t9dar tjawb lclient khdem bhad send li lta7t 3tiha it->fd o kteb lclient li bghiti
+		send(it->fd, "Message received\n", 17, 0);
+	}
+}
+
 Server::Server(char **av)
 {
-	ClientIter	client_iter;
-	port = parce_port(av[1]);
-	password = av[2]; 
-	if(password.empty()){
-		std::cout<<"Please Enter A Valid Password"<<std::endl;
-		exit(1);
-	}
-	if (port == -1)
-	{
-		std::cout<<"Invalid Port"<<std::endl;
-		exit(1);
-	}
+	set_pass_and_port(av);
 	create_bind_listen(port);
 	pollfd p;
 	p.fd = server_socket;
@@ -98,28 +127,8 @@ Server::Server(char **av)
 					//ila kent kat9aleb fin t9dar tzid data f Client class dkhol lhad lfonction atl9ani mkhalli lk fiha comment
 					accept_new_client();
 				}else{
-					if (it->revents & (POLLHUP | POLL_ERR)){
-						//hna fin kanmsa7 lclient mn clientsmap ma3raftch wach at7tajoha fchi 7aja
-						printf("Client disconnected\n");
-						if (clients_map.size() > 0){
-							client_iter = clients_map.find(it->fd);
-							clients_map.erase(client_iter);
-						}
-						for (PollIter pit = poll_fds.begin(); pit < poll_fds.end(); pit++){
-							if(it->fd == pit->fd){
-								poll_fds.erase(pit);
-							}
-						}
-						close(it->fd);
-					}
-					else if (it->revents & POLLIN){
-						int recv_len = recv(it->fd, buffer, BUFFERSIZE, 0);
-						buffer[recv_len] = '\0';
-						//ay haja rseltiha  mn lclient atl9aha fhad lbuffer les command dima ayb9aw wjiwkom hna b7all "pass kick" wa majawarahoma
-						printf("Received from client : %s", buffer);
-						//hna fin t9dar tjawb lclient khdem bhad send li lta7t 3tiha it->fd o kteb lclient li bghiti
-						send(it->fd, "Message received\n", 17, 0);
-					}
+					//dkhol hna atl9ani mkhalli lek fin comments khassk tchofhom
+					read_client_data(it);
 				}
 			}
 			poll_result--;
