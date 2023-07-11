@@ -34,6 +34,7 @@ void Server::set_pass_and_port(char **av){
 
 void Server::create_bind_listen(int port)
 {
+	int	option;
 	server_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (server_socket < 0)
 	{
