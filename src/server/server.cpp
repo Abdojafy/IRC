@@ -40,6 +40,8 @@ void Server::create_bind_listen(int port)
 		perror("socket");
 		exit(1);
 	}
+	if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)) == -1)
+		perror("setsocketopt");
 	addr_server.sin_family = AF_INET;
 	addr_server.sin_addr.s_addr = htonl(INADDR_ANY);
 	addr_server.sin_port = htons(port);
