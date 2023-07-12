@@ -7,6 +7,23 @@ Client::Client(sockaddr_in addr, int fd)
 {
 	address = addr;
 	client_socket = fd;
+	
+}
+
+void	Client::increment_isvalid(){
+	isvalid++;
+}
+
+int		Client::get_isvalid(){
+	return isvalid;
+}
+
+void	Client::set_registred(){
+	this->registred = true;
+}
+
+bool 	Client::get_registred(){
+	return (registred);
 }
 
 Client::~Client()
@@ -18,9 +35,27 @@ sockaddr_in Client::get_client_address()
 	return address;
 }
 
+std::string Client::get_client_nick(){
+	return this->nick;
+}
+
+void Client::set_client_data(std::string username, std::string realname, std::string pass, std::string nick)
+{
+	this->username = username;
+	this->realname = realname;
+	this->pass = pass;
+	this->nick = nick;
+}
+
+void Client::set_client_nick(std::string nick){
+	this->nick = nick;
+}
+
 Client &Client::operator=(const Client &other)
 {
 	int	i = 0;
+	registred = false;
+	isvalid = 0;
 	client_socket = other.client_socket;
 	address.sin_addr = other.address.sin_addr;
 	address.sin_family = other.address.sin_family;
