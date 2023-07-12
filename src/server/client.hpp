@@ -9,14 +9,32 @@ public:
 	Client(struct sockaddr_in addr, int fd);
 	~Client();
 
+	sockaddr_in get_client_address();
+	void		increment_isvalid(std::string command);
+	int			get_isvalid();
+	bool 		get_registred();
+	void		set_clientip(std::string ip);
+	void 		set_registred();
+	void		set_client_data(std::string username, std::string realname, std::string pass, std::string nick);
+	void		set_client_nick(std::string  nick);
+	std::string	get_client_nick();
+
+
 	Client &operator=(const Client &other);
 private:
-	std::string user;
+	std::string username;
+	std::string	realname;
 	std::string	nick;
 	std::string pass;
 	int			client_socket;
-	struct		sockaddr_in address;
-
+	std::string	clientip;
+	sockaddr_in address;
+	//authentication ustilis
+	int			isvalid;
+	bool 		registred;
+	bool		nickbool;
+	bool		userbool;
+	bool		passbool;
 };
 
 #endif
