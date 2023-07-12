@@ -88,7 +88,7 @@ void	Server::check_nickname(ClientIter client_iter, std::string remind, std::str
 			}
 			else
 				nick = seminick;
-			client_iter->second.increment_isvalid();
+			client_iter->second.increment_isvalid(command);
 		}
 	}
 }
@@ -112,7 +112,7 @@ void	Server::check_user(ClientIter client_iter, std::string remind, std::string 
 	{
 		username = *remindvec.begin();
 		realname = *remindvec.end();
-		client_iter->second.increment_isvalid();
+		client_iter->second.increment_isvalid(command);
 	}
 }
 
@@ -136,7 +136,7 @@ void	Server::check_pass(ClientIter client_iter, std::string remind, std::string 
 	else
 	{
 		pass = remind;
-		client_iter->second.increment_isvalid();
+		client_iter->second.increment_isvalid(command);
 	}
 }
 
@@ -172,6 +172,7 @@ int Server::get_client_info(int fd)
 		check_pass(client_iter, remind, hostname, err_msg, fd, command);
 	else if (!command.compare("USER"))
 		check_user(client_iter, remind, hostname, err_msg, fd, command);
+	std::cout<<client_iter->second.get_isvalid()<<std::endl;
 	if (client_iter->second.get_isvalid() == 3 && !client_iter->second.get_registred()){
 		nick_names.push_back(nick);
 		client_iter->second.set_registred();

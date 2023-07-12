@@ -10,7 +10,7 @@ public:
 	~Client();
 
 	sockaddr_in get_client_address();
-	void		increment_isvalid();
+	void		increment_isvalid(std::string command);
 	int			get_isvalid();
 	bool 		get_registred();
 	void		set_clientip(std::string ip);
@@ -26,12 +26,15 @@ private:
 	std::string	realname;
 	std::string	nick;
 	std::string pass;
-	int			isvalid;
 	int			client_socket;
-	bool 		registred;
 	std::string	clientip;
 	sockaddr_in address;
-
+	//authentication ustilis
+	int			isvalid;
+	bool 		registred;
+	bool		nickbool;
+	bool		userbool;
+	bool		passbool;
 };
 
 #endif

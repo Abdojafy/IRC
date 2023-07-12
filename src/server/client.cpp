@@ -10,8 +10,20 @@ Client::Client(sockaddr_in addr, int fd)
 	
 }
 
-void	Client::increment_isvalid(){
-	isvalid++;
+void	Client::increment_isvalid(std::string command){
+
+	if (command == "NICK" && !nickbool){
+		isvalid++;
+		nickbool = true;
+	}
+	else if (command == "USER" && !userbool){
+		isvalid++;
+		userbool = true;
+	}
+	else if (command == "PASS" && !passbool){
+		isvalid++;
+		passbool = true;
+	}
 }
 
 int		Client::get_isvalid(){
@@ -60,6 +72,9 @@ Client &Client::operator=(const Client &other)
 	int	i = 0;
 	registred = false;
 	isvalid = 0;
+	userbool = false;
+	nickbool = false;
+	passbool = false;
 	client_socket = other.client_socket;
 	address.sin_addr = other.address.sin_addr;
 	address.sin_family = other.address.sin_family;
