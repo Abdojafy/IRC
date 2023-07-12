@@ -8,18 +8,24 @@ void	channels::create_channel(std::string name, std::string mode, std::string pa
 	
 }
 
+channels::channels()
+{
+	
+}
+
 channels::channels(std::string name)
 {
 	if (name.length() < 200)
 		this->name = name;
 }
 
-channels::channels(std::string name, std::string mode)
+channels::channels(std::string name, std::string password)
 {
+	
 	if (name.length() < 200)
 	{
 		this->name = name;
-		this->mode = mode;
+		this->password = password;
 	}
 }
 

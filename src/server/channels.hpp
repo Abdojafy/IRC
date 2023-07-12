@@ -1,9 +1,7 @@
 #ifndef CHANNELS_HPP
 #define CHANNELS_HPP
 
-#include<string>
-#include<iostream>
-#include<map>
+#include"ircserv.hpp"
 #include "client.hpp"
 
 class channels
@@ -13,9 +11,14 @@ private:
 	std::string mode;
 	std::string password;
 public:
-	std::map<int, Client> client;
+	typedef std::map<int, Client>::iterator					ClientIter;
+	typedef std::map<int, Client>							ClientMap;
+
+	ClientMap client;
+	ClientMap banned;
+	channels();
 	channels(std::string name);
-	channels(std::string name, std::string mode);
+	channels(std::string name, std::string password);
 	~channels();
 	std::string 	get_name();
 	void			set_name(std::string &new_name);

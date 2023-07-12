@@ -19,6 +19,7 @@
 #include <exception>
 #include <stdexcept>
 #include <algorithm>
+#include <string>
 
 
 #endif

@@ -30,6 +30,10 @@ int		Client::get_isvalid(){
 	return isvalid;
 }
 
+int		Client::get_client_socket(){
+	return client_socket;
+}
+
 void	Client::set_registred(){
 	this->registred = true;
 }
@@ -49,6 +53,10 @@ sockaddr_in Client::get_client_address()
 
 std::string Client::get_client_nick(){
 	return this->nick;
+}
+
+std::string Client::get_clientip(){
+	return this->clientip;
 }
 
 void	Client::set_clientip(std::string ip){
