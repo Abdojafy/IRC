@@ -39,6 +39,10 @@ std::string Client::get_client_nick(){
 	return this->nick;
 }
 
+void	Client::set_clientip(std::string ip){
+	this->clientip = ip;
+}
+
 void Client::set_client_data(std::string username, std::string realname, std::string pass, std::string nick)
 {
 	this->username = username;

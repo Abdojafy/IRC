@@ -21,12 +21,16 @@ public:
 	typedef std::vector<std::string>::iterator		VecIter;
 	
 
-	void		create_bind_listen(int port);
-	void		accept_new_client();
-	struct in_addr get_clientip(int fd);
-	void		read_client_data(PollIter it);
-	int			get_client_info(int fd);
-	void		set_pass_and_port(char **av);
+	void			create_bind_listen(int port);
+	void			accept_new_client();
+	struct in_addr	get_clientip(int fd);
+	void			read_client_data(PollIter it);
+	int				get_client_info(int fd);
+	void			set_pass_and_port(char **av);
+
+	void			check_pass(ClientIter client_iter, std::string remind, std::string hostname, std::string &err_msg, int fd, std::string command);
+	void			check_nickname(ClientIter client_iter, std::string remind, std::string command, std::string hostname, std::string &err_msg , int fd);
+	void			check_user(ClientIter client_iter, std::string remind, std::string hostname, std::string &err_msg, int fd, std::string command);
 
 private:
 	int			server_socket;
@@ -41,7 +45,13 @@ private:
 	PollFds 	poll_fds;
 	sockaddr_in addr_server;
 	sockaddr_in addr_client;
+
+	//authentication variables
 	VecStr		nick_names;
+	std::string	realname;
+	std::string	username;
+	std::string	nick;
+	std::string	pass;
 };
 int	parce_port(char *str);
 bool is_it_digits(std::string str);
