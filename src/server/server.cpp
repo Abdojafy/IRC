@@ -55,15 +55,17 @@ void Server::set_pass_and_port(char **av){
 
 void Server::create_bind_listen(int port)
 {
-	int option = 1;
+	int	option;
 	server_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (server_socket < 0)
 	{
 		perror("socket");
 		exit(1);
 	}
-	if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)) == -1)
+	if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)) == -1){
 		perror("setsocketopt");
+		exit(1);
+	}
 	addr_server.sin_family = AF_INET;
 	addr_server.sin_addr.s_addr = htonl(INADDR_ANY);
 	addr_server.sin_port = htons(port);
@@ -81,6 +83,7 @@ void Server::create_bind_listen(int port)
 
 void Server::accept_new_client()
 {
+	Client client;
 	client_addr_len = sizeof(addr_client);
 	client_socket = accept(server_socket, (sockaddr *)&addr_client, (socklen_t*)&client_addr_len);
 	if (client_socket < 0)
@@ -96,15 +99,15 @@ void Server::accept_new_client()
 		poll_fds.push_back(p);
 		std::cout<<"new connection from client : "<<inet_ntoa(addr_client.sin_addr)<<"  in port : "<<htons(port)<<std::endl;
 		send(client_socket, "wellcome to the server\n", 23, 0);
-		//hna fin kan3amer client data t9dar tzid ay haja fhadak paramitrised constructor o tmchi t3amerha flclient
-		clients_map.insert(std::make_pair(client_socket, Client(addr_client, client_socket)));
+		client = Client(addr_client, client_socket);
+		clients_map.insert(std::make_pair(client_socket, client));
 	}
 }
 
 void Server::read_client_data(PollIter it){
 	ClientIter client_iter;
+
 	if (it->revents & (POLLHUP | POLL_ERR)){
-		//hna fin kanmsa7 lclient mn clientsmap ma3raftch wach at7tajoha fchi 7aja
 		printf("Client disconnected\n");
 		if (clients_map.size() > 0){
 			client_iter = clients_map.find(it->fd);
@@ -118,12 +121,16 @@ void Server::read_client_data(PollIter it){
 		close(it->fd);
 	}
 	else if (it->revents & POLLIN){
+		bzero(buffer, BUFFERSIZE - 1);
 		int recv_len = recv(it->fd, buffer, BUFFERSIZE, 0);
 		buffer[recv_len - 1] = '\0';// without newline
 		//ay haja rseltiha  mn lclient atl9aha fhad lbuffer les command dima ayb9aw wjiwkom hna b7all "pass kick" wa majawarahoma
 		read_command(buffer);
 		// printf("Received from client : %s", buffer);
 		//hna fin t9dar tjawb lclient khdem bhad send li lta7t 3tiha it->fd o kteb lclient li bghiti
+		buffer[recv_len] = '\0';
+		get_client_info(it->fd);
+		std::cout<<"Received from client : "<<client_msg<<std::endl;
 		send(it->fd, "Message received\n", 17, 0);
 	}
 }
@@ -146,10 +153,8 @@ Server::Server(char **av)
 			PollFds tmp = poll_fds;
 			for (PollIter it = tmp.begin(); it != tmp.end(); it++){
 				if (it->revents & POLLIN && it->fd == server_socket){
-					//ila kent kat9aleb fin t9dar tzid data f Client class dkhol lhad lfonction atl9ani mkhalli lk fiha comment
 					accept_new_client();
 				}else{
-					//dkhol hna atl9ani mkhalli lek fin comments khassk tchofhom
 					read_client_data(it);
 				}
 			}
