@@ -1,5 +1,26 @@
 #include "server.hpp"
 
+void	Server::read_command(char *buffer)
+{
+	std::string commands = buffer;
+	std::string cmd;
+	std::istringstream ss(buffer);
+	std::string::iterator i;
+	std::string::iterator it;
+		// std::cout << buffer << std::endl;
+		i = std::find(commands.begin(), commands.end(), ' ');
+	if(i != commands.end())
+	{
+		// commands.substr(0 ,commands.length());
+		std::cout << "(" << commands << ")" << std::endl;
+		it = commands.erase(commands.begin(), i + 1);
+		std::cout << "(" << commands << ")" << std::endl;
+		while (*it)
+			std::cout << "(" << *it++ << ")" << std::endl;
+
+	}
+}
+
 bool is_it_digits(std::string str){
 	for (size_t i = 0; i < str.length(); i++){
 		if  (std::isdigit(str[i]))
@@ -98,9 +119,10 @@ void Server::read_client_data(PollIter it){
 	}
 	else if (it->revents & POLLIN){
 		int recv_len = recv(it->fd, buffer, BUFFERSIZE, 0);
-		buffer[recv_len] = '\0';
+		buffer[recv_len - 1] = '\0';// without newline
 		//ay haja rseltiha  mn lclient atl9aha fhad lbuffer les command dima ayb9aw wjiwkom hna b7all "pass kick" wa majawarahoma
-		printf("Received from client : %s", buffer);
+		read_command(buffer);
+		// printf("Received from client : %s", buffer);
 		//hna fin t9dar tjawb lclient khdem bhad send li lta7t 3tiha it->fd o kteb lclient li bghiti
 		send(it->fd, "Message received\n", 17, 0);
 	}

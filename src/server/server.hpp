@@ -20,7 +20,7 @@ public:
 	void	accept_new_client();
 	void	read_client_data(PollIter it);
 	void	set_pass_and_port(char **av);
-
+	void	read_command(char *buffer);
 private:
 	int			server_socket;
 	int			client_socket;
@@ -36,5 +36,4 @@ private:
 };
 int	parce_port(char *str);
 bool is_it_digits(std::string str);
-
 #endif

@@ -4,6 +4,7 @@
 
 
 #include <iostream>
+#include <sstream>
 #include <map>
 #include <vector>
 #include <sys/socket.h>
@@ -16,6 +17,7 @@
 #include <unistd.h>
 #include <exception>
 #include <stdexcept>
+#include <algorithm>
 
 
 #endif
