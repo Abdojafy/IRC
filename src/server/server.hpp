@@ -27,6 +27,14 @@ public:
 
 
 
+	typedef std::vector<pollfd>::iterator			PollIter;
+	typedef std::vector<pollfd> 					PollFds;
+	typedef std::map<int, Client>::iterator			ClientIter;
+	typedef std::map<int, Client>					ClientMap;
+	typedef std::vector<std::string>				VecStr;
+	typedef std::vector<std::string>::iterator		VecIter;
+	
+	static void		send_message(int fd, std::string message);
 	void			create_bind_listen(int port);
 	void			accept_new_client();
 	struct in_addr	get_clientip(int fd);
@@ -42,6 +50,11 @@ public:
 	bool			check_channel_name(std::string name);
 	void			join_channels(PollIter it_client, std::string name, std::string pass);
 
+	std::string		set_welcome_msg(std::string hostname, ClientIter client_iter);
+
+	void			check_pass(ClientIter client_iter, std::string remind, std::string hostname, int fd, std::string command);
+	void			check_nickname(ClientIter client_iter, std::string remind, std::string command, std::string hostname, int fd);
+	void			check_user(ClientIter client_iter, std::string remind, std::string hostname, int fd, std::string command);
 
 private:
 	int			server_socket;
@@ -67,11 +80,13 @@ private:
 	//JOIN variables
 	mapChannels listChannels;
 };
+
 int	parce_port(char *str);
 bool is_it_digits(std::string str);
 std::vector<std::string> split(std::string str, char c);
 std::string trim_spaces(std::string str);
 std::vector<std::string> ft_split(char const *s, char c);
 std::string to_upper(const char *str);
+
 
 #endif
