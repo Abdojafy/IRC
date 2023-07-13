@@ -10,15 +10,17 @@ private:
 	std::string name;
 	std::string mode;
 	std::string password;
+	size_t			limite;
+	bool invited;
 public:
 	typedef std::map<int, Client>::iterator					ClientIter;
 	typedef std::map<int, Client>							ClientMap;
 
 	ClientMap client;
-	ClientMap banned;
+	ClientMap operators;
 	channels();
 	channels(std::string name);
-	channels(std::string name, std::string password);
+	channels(std::string name, std::string password, std::string mode);
 	~channels();
 	std::string 	get_name();
 	void			set_name(std::string &new_name);
@@ -26,7 +28,11 @@ public:
 	void			set_mode(std::string &new_mode);
 	std::string 	get_password();
 	void			set_password(std::string &new_password);
-	void			create_channel(std::string name, std::string mode, std::string password);
+	std::string		get_users();
+	size_t				get_limite();
+	void			set_limite(size_t limite);
+	bool			get_invited();
+	void			set_invited(bool invited);
 };
 
 #endif
