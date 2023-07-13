@@ -6,8 +6,7 @@ Client::Client(){
 Client::Client(sockaddr_in addr, int fd)
 {
 	address = addr;
-	client_socket = fd;
-	
+	client_socket = fd;	
 }
 
 void	Client::increment_isvalid(std::string command){
