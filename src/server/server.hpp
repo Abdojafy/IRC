@@ -20,17 +20,18 @@ public:
 	typedef std::vector<std::string>				VecStr;
 	typedef std::vector<std::string>::iterator		VecIter;
 	
-
+	static void		send_message(int fd, std::string message);
 	void			create_bind_listen(int port);
 	void			accept_new_client();
 	struct in_addr	get_clientip(int fd);
 	void			read_client_data(PollIter it);
 	int				get_client_info(int fd);
 	void			set_pass_and_port(char **av);
+	std::string		set_welcome_msg(std::string hostname, ClientIter client_iter);
 
-	void			check_pass(ClientIter client_iter, std::string remind, std::string hostname, std::string &err_msg, int fd, std::string command);
-	void			check_nickname(ClientIter client_iter, std::string remind, std::string command, std::string hostname, std::string &err_msg , int fd);
-	void			check_user(ClientIter client_iter, std::string remind, std::string hostname, std::string &err_msg, int fd, std::string command);
+	void			check_pass(ClientIter client_iter, std::string remind, std::string hostname, int fd, std::string command);
+	void			check_nickname(ClientIter client_iter, std::string remind, std::string command, std::string hostname, int fd);
+	void			check_user(ClientIter client_iter, std::string remind, std::string hostname, int fd, std::string command);
 
 private:
 	int			server_socket;
@@ -53,9 +54,11 @@ private:
 	std::string	nick;
 	std::string	pass;
 };
+
 int	parce_port(char *str);
 bool is_it_digits(std::string str);
 std::vector<std::string> split(std::string str, char c);
 std::string trim_spaces(std::string str);
+
 
 #endif

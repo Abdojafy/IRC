@@ -32,6 +32,12 @@ void Server::set_pass_and_port(char **av){
 	}
 }
 
+void Server::send_message(int fd, std::string message)
+{
+	if (send(fd, message.c_str(), message.length(), 0) == -1)
+	perror("send");
+}
+
 void Server::create_bind_listen(int port)
 {
 	int	option;
@@ -105,7 +111,7 @@ void Server::read_client_data(PollIter it){
 		buffer[recv_len] = '\0';
 		get_client_info(it->fd);
 		std::cout<<"Received from client : "<<client_msg<<std::endl;
-		send(it->fd, "Message received\n", 17, 0);
+		// send(it->fd, "Message received\n", 17, 0);
 	}
 }
 

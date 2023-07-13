@@ -55,10 +55,9 @@ struct in_addr Server::get_clientip(int fd){
 }
 
 
-void	Server::check_nickname(ClientIter client_iter, std::string remind, std::string command, std::string hostname, std::string &err_msg , int fd){
+void	Server::check_nickname(ClientIter client_iter, std::string remind, std::string command, std::string hostname, int fd){
 	
 	std::stringstream	ss;
-	std::string			nick;
 	VecIter				nick_iter;
 	std::string 		seminick;
 	std::string			oldnick;
@@ -66,79 +65,56 @@ void	Server::check_nickname(ClientIter client_iter, std::string remind, std::str
 	ss << remind;
 	std::getline(ss, seminick, ' ');
 	seminick = trim_spaces(seminick);
-
-	if (!command.compare("NICK") && client_iter->second.get_registred()){
+	if (*seminick.begin() == ':'){
+		remind.erase(remind.begin());
+		nick = remind;
+	}
+	else
+		nick = seminick;
+	nick_iter = std::find(nick_names.begin(), nick_names.end(), nick);
+	if (!command.compare("NICK") && !client_iter->second.get_registred())
+	{
+		if (remind.empty())
+			send_message(fd, hostname + " 431 :No nickname given\n");
+		else if (nick_iter != nick_names.end())
+			send_message(fd, hostname + " 433 * :Nickname is already in use.\n");
+		else
+			client_iter->second.increment_isvalid(command);
+	}
+	else if (!command.compare("NICK") && client_iter->second.get_registred()){
 		oldnick = client_iter->second.get_client_nick();
-		nick_iter = std::find(nick_names.begin(), nick_names.end(), nick);
 		if (nick_iter != nick_names.end())
 			nick_names.erase(nick_iter);
 		client_iter->second.set_client_nick(nick);
 	}
-	else if (!command.compare("NICK") && !client_iter->second.get_registred())
-	{
-		nick_iter = std::find(nick_names.begin(), nick_names.end(), nick);
-		if (remind.empty()){
-			err_msg = hostname + " 431 :No nickname given\n";
-			send(fd, err_msg.c_str(), err_msg.length(), 0);
-		}
-		else if (nick_iter != nick_names.end())
-		{
-			err_msg = hostname + "  433 *  :Nickname is already in use.\n";
-			send(fd, err_msg.c_str(), err_msg.length(), 0);
-		}
-		else{
-			if (*seminick.begin() == ':'){
-				remind.erase(remind.begin());
-				nick = remind;
-			}
-			else
-				nick = seminick;
-			client_iter->second.increment_isvalid(command);
-		}
-	}
 }
 
 
-void	Server::check_user(ClientIter client_iter, std::string remind, std::string hostname, std::string &err_msg, int fd, std::string command){
+void	Server::check_user(ClientIter client_iter, std::string remind, std::string hostname, int fd, std::string command){
 
 	VecStr				remindvec;
 
 	remindvec = split(remind, ' ');
 	if (client_iter->second.get_registred())
-	{
-		err_msg = hostname + " 462 :You may not reregister\n";
-		send(fd, err_msg.c_str(), err_msg.length(), 0);
-	}
-	else if (remindvec.size() < 4){
-		err_msg = hostname + " 461 " + command + " :Not enough parameters\n";
-		send(fd, err_msg.c_str(), err_msg.length(), 0);
-	}
+		send_message(fd, hostname + " 462 :You may not reregister\n");
+	else if (remindvec.size() < 4)
+		send_message(fd, hostname + " 461 " + command + " :Not enough parameters\n");
 	else
 	{
 		username = *remindvec.begin();
-		realname = *remindvec.end();
+		realname = *(remindvec.end() -1);
 		client_iter->second.increment_isvalid(command);
 	}
 }
 
-void	Server::check_pass(ClientIter client_iter, std::string remind, std::string hostname, std::string &err_msg, int fd, std::string command){
+void	Server::check_pass(ClientIter client_iter, std::string remind, std::string hostname, int fd, std::string command){
 
 	if (client_iter->second.get_registred())
-	{
-		err_msg = hostname + " 462 :You may not reregister\n";
-		send(fd, err_msg.c_str(), err_msg.length(), 0);
-	}
+		send_message(fd, hostname + " 462 :You may not reregister\n");
 	else if (remind.empty())
-	{
-		err_msg = hostname + " 461 " + command + " :Not enough parameters\n";
-		send(fd, err_msg.c_str(), err_msg.length(), 0);
-	}
+		send_message(fd, hostname + " 461 " + command + " :Not enough parameters\n");
 	else if (remind.compare(password))
-	{
-		std::cout<<remind<<std::endl;
-		err_msg = hostname + " 464 :Password Incorrect\n";
-		send(fd, err_msg.c_str(), err_msg.length(), 0);
-	}
+		send_message(fd, hostname + "464 :Password Incorrect\n");
 	else
 	{
 		pass = remind;
@@ -147,6 +123,16 @@ void	Server::check_pass(ClientIter client_iter, std::string remind, std::string 
 }
 
 
+std::string Server::set_welcome_msg(std::string hostname, ClientIter client_iter){
+	
+	std::string msg;
+
+	msg = hostname + " 001 " + client_iter->second.get_client_nick() + " :Welcome to the IRC network," + client_iter->second.get_client_nick() + "!\n";
+	msg += hostname + " 002 " + client_iter->second.get_client_nick() + " :Welcome to the Real IRC server!\n";
+
+	return msg;
+}
+
 int Server::get_client_info(int fd)
 {
 	std::stringstream	ss;
@@ -154,8 +140,7 @@ int Server::get_client_info(int fd)
 	std::string			hostname;
 	in_addr				addrip;
 	std::string			remind;
-	VecIter				nick_iter;
-	std::string			err_msg;
+	std::string			welcome_msg;
 	ClientIter			client_iter;
 
 	client_iter = clients_map.find(fd);
@@ -163,7 +148,6 @@ int Server::get_client_info(int fd)
 	addrip = get_clientip(fd);
 	hostname = inet_ntoa(addrip);
 	client_iter->second.set_clientip(hostname);
-	err_msg = hostname + " 001 :Welcome to the ExampleNet Internet Relay Chat Network\n";	
 	if (client_msg.empty())
 		return 1;
 	remove_new_line(client_msg);
@@ -172,17 +156,17 @@ int Server::get_client_info(int fd)
 	ft_upper(command);
 	std::getline (ss, remind, '\0');
 	remind = trim_spaces(remind);
-	
-	check_nickname(client_iter, remind, command, hostname, err_msg, fd);
+	check_nickname(client_iter, remind, command, hostname, fd);
+	welcome_msg = set_welcome_msg(hostname, client_iter);
 	if (!command.compare("PASS"))
-		check_pass(client_iter, remind, hostname, err_msg, fd, command);
+		check_pass(client_iter, remind, hostname, fd, command);
 	else if (!command.compare("USER"))
-		check_user(client_iter, remind, hostname, err_msg, fd, command);
+		check_user(client_iter, remind, hostname, fd, command);
 	if (client_iter->second.get_isvalid() == 3 && !client_iter->second.get_registred()){
 		nick_names.push_back(nick);
 		client_iter->second.set_registred();
 		client_iter->second.set_client_data(username, realname, pass, nick);
-		send(fd, err_msg.c_str(), err_msg.length(), 0);
+		send_message(fd, welcome_msg);
 	}
 	return 0;
 }
