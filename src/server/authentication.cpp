@@ -5,7 +5,10 @@ void remove_new_line(std::string &msg){
 	pos = msg.find('\r');
 	if (pos != -1)
 		msg.erase(pos);
-	msg.erase(msg.length() - 1);
+	pos = msg.find('\n');
+	if (pos != -1)
+		msg.erase(pos);
+
 }
 
 void	ft_upper(std::string &msg){
@@ -24,7 +27,10 @@ std::vector<std::string> split(std::string str, char c){
 	
 	ss << str;
 	while(std::getline(ss, tmp, c))
-		vec.push_back(tmp);
+	{
+		if (tmp[0] != 0)
+			vec.push_back(tmp);
+	}
 	return (vec);
 }
 
@@ -70,7 +76,6 @@ void	Server::check_nickname(ClientIter client_iter, std::string remind, std::str
 	}
 	else if (!command.compare("NICK") && !client_iter->second.get_registred())
 	{
-		std::cout<<"helllo from nick"<<std::endl;
 		nick_iter = std::find(nick_names.begin(), nick_names.end(), nick);
 		if (remind.empty()){
 			err_msg = hostname + " 431 :No nickname given\n";
@@ -130,7 +135,8 @@ void	Server::check_pass(ClientIter client_iter, std::string remind, std::string 
 	}
 	else if (remind.compare(password))
 	{
-		err_msg = hostname + " 464 chris :Password Incorrect\n";
+		std::cout<<remind<<std::endl;
+		err_msg = hostname + " 464 :Password Incorrect\n";
 		send(fd, err_msg.c_str(), err_msg.length(), 0);
 	}
 	else
@@ -172,7 +178,6 @@ int Server::get_client_info(int fd)
 		check_pass(client_iter, remind, hostname, err_msg, fd, command);
 	else if (!command.compare("USER"))
 		check_user(client_iter, remind, hostname, err_msg, fd, command);
-	std::cout<<client_iter->second.get_isvalid()<<std::endl;
 	if (client_iter->second.get_isvalid() == 3 && !client_iter->second.get_registred()){
 		nick_names.push_back(nick);
 		client_iter->second.set_registred();
