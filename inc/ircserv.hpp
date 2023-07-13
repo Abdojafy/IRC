@@ -4,6 +4,7 @@
 
 
 #include <iostream>
+#include <sstream>
 #include <map>
 #include <sstream>
 #include <vector>
@@ -17,6 +18,8 @@
 #include <unistd.h>
 #include <exception>
 #include <stdexcept>
+#include <algorithm>
+#include <string>
 
 
 #endif

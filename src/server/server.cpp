@@ -1,5 +1,169 @@
 #include "server.hpp"
 
+bool	find_char(std::string str, char c)
+{
+	int i = 0;
+	while (str[i])
+	{
+		if (str[i] == c)
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+bool	Server::check_channel_name(std::string name)
+{
+	if (!name.empty() && name[0] == '#' && !find_char(name, ',') 
+		&& !find_char(name, '\a') && name.length() > 1 && name.length() < 200)
+	{
+		return(true);
+	}
+	return(false);
+}
+
+void	Server::join_channels(PollIter it_client, std::string name, std::string pass)
+{
+	ClientIter it_map_client = clients_map.begin();
+	channelsIter it_channel = listChannels.begin();
+	Client my_client;
+	channels my_channel;
+
+	//which channel
+	while (it_channel != listChannels.end())
+	{
+		if (it_channel->first == name)
+		{
+			my_channel = it_channel->second;
+			break ;
+		}
+		it_channel++;
+	}
+	if (it_channel == listChannels.end())
+	{
+		my_channel = channels(name, pass);
+	}
+	//which client
+	while (it_map_client != clients_map.end())
+	{
+		if (it_map_client->first == it_client->fd)
+		{
+			my_client = it_map_client->second;
+			// std::cout << it_map_client->first << "*******" << std::endl;
+			break ;
+		}
+		it_map_client++;
+	}
+	if (it_map_client == clients_map.end())
+	{
+		std::cout << "error client not found" << std::endl;
+		exit(1);
+	}
+
+	//banned list
+	it_map_client = my_channel.banned.begin();
+	while (it_map_client != my_channel.banned.end())
+	{
+		if (it_map_client->first == it_client->fd)
+			break ;
+		it_map_client++;
+	}
+	if (it_map_client != my_channel.banned.end())
+	{
+		std::cout << "error client is banned" << std::endl;
+		return ;
+	}
+	std::cout << it_client->fd <<"fd ==" <<std::endl;
+	my_channel.client.insert(std::pair<int, Client>(it_client->fd, my_client));
+
+	listChannels.insert(std::pair<std::string, channels>(name, my_channel));
+
+		ClientIter client_iter;
+		channelsIter itc = listChannels.begin();
+		while (itc != listChannels.end())
+		{
+			client_iter = itc->second.client.begin();
+			std::cout << itc->second.client.size() << "---" << std::endl;
+			std::cout << "channel [" << itc->second.get_name() << "] has key (" << itc->second.get_password() << ") | with this clients {";
+			while (client_iter != itc->second.client.end())
+			{
+				std::cout << client_iter->second.get_client_socket() << ", ";
+				client_iter++;
+			}
+			std::cout <<"}"<<std::endl;
+			itc++;
+		}
+
+
+}
+
+void	Server::join(VecStr command, PollIter it_client)
+{
+	VecIter it = command.begin();
+	std::string pass;
+	std::string name;
+	std::istringstream names;
+	std::istringstream passwords;
+	if (command.size() < 3 && !command.empty())
+	{
+		names.str(*it++);
+		if (it != command.end())
+			passwords.str(*it);
+		while (std::getline(names, name,','))
+		{
+			std::getline(passwords, pass,',');
+			if (check_channel_name(name))
+			{
+				channelsIter itch = listChannels.begin();
+				while (itch != listChannels.end())
+				{
+					if (itch->first == name)
+					{
+						join_channels(it_client, name, pass);
+						break ;
+					}
+					itch++;
+				} 
+				if (itch == listChannels.end())
+				{
+					// listChannels.insert(std::pair<std::string, channels>(name, new_channel));
+					join_channels(it_client, name, pass);
+				}
+			}
+			else
+				std::cout << "error" <<std::endl;
+			pass.clear();
+		}
+
+	
+	// while (it != command.end())
+	// 		std::cout << "[" << *it++ << "]" << std::endl;
+	// 	std::cout << "*****************" << std::endl;
+	// channelsIter itchan = listChannels.begin();
+	// while (itchan != listChannels.end())
+	// {
+	// 		// std::cout << "name : " << itchan->first < << ")" << std::endl;
+	// 		itchan++;
+	// }
+		
+	}
+}
+
+void	Server::read_command(PollIter it_client)
+{
+	VecStr command = ft_split(client_msg.c_str(), ' ');
+	VecIter it = command.begin();
+	std::string str = to_upper((*it).c_str());
+	if (!strcmp(str.c_str(), "JOIN"))
+	{
+		command.erase(it);
+		join(command, it_client);
+	}
+	it = command.begin();
+		// while (it != command.end())
+		// 	std::cout << "(" << *it++ << ")" << std::endl;
+}
+
 bool is_it_digits(std::string str){
 	for (size_t i = 0; i < str.length(); i++){
 		if  (std::isdigit(str[i]))
@@ -108,10 +272,15 @@ void Server::read_client_data(PollIter it){
 	else if (it->revents & POLLIN){
 		bzero(buffer, BUFFERSIZE - 1);
 		int recv_len = recv(it->fd, buffer, BUFFERSIZE, 0);
+		//ay haja rseltiha  mn lclient atl9aha fhad lbuffer les command dima ayb9aw wjiwkom hna b7all "pass kick" wa majawarahoma
+		// printf("Received from client : %s", buffer);
+		//hna fin t9dar tjawb lclient khdem bhad send li lta7t 3tiha it->fd o kteb lclient li bghiti
 		buffer[recv_len] = '\0';
 		get_client_info(it->fd);
-		std::cout<<"Received from client : "<<client_msg<<std::endl;
-		// send(it->fd, "Message received\n", 17, 0);
+		read_command(it);
+		std::cout << "Received from client : " << client_msg << std::endl;
+		
+		send(it->fd, "Message received\n", 17, 0);
 	}
 }
 
@@ -123,7 +292,8 @@ Server::Server(char **av)
 	p.fd = server_socket;
 	p.events = POLLIN;
 	poll_fds.push_back(p);
-	while (1){
+	while (1)
+	{
 		poll_result = poll(poll_fds.data(), poll_fds.size(), -1);
 		if (poll_result < 0){
 			perror("poll");
