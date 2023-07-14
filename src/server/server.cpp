@@ -27,7 +27,25 @@ void	Server::join_channels(PollIter it_client, std::string name, std::string pas
 	ClientIter it_map_client = clients_map.begin();
 	channelsIter it_channel = listChannels.begin();
 	Client my_client;
-	channels my_channel;
+	channels *my_channel;
+	std::string mode;
+	std::string message;
+
+	//which client
+	while (it_map_client != clients_map.end())
+	{
+		if (it_map_client->first == it_client->fd)
+		{
+			my_client = it_map_client->second;
+			break ;
+		}
+		it_map_client++;
+	}
+	if (it_map_client == clients_map.end())
+	{
+		std::cout << "error client not found" << std::endl;
+		exit(1);
+	}
 
 	//which channel
 	while (it_channel != listChannels.end())
@@ -39,71 +57,80 @@ void	Server::join_channels(PollIter it_client, std::string name, std::string pas
 		}
 		it_channel++;
 	}
+
+	//check password in mode (+k)
+	if (it_channel != listChannels.end())
+	{
+		if (strcmp(it_channel->second->get_password().c_str(), pass.c_str()))
+		{
+			message = ":server 475 " + my_client.get_client_nick() + " " + it_channel->second->get_name() + " :Cannot join channel (+k)\n";
+			send_message(it_client->fd, message);
+			return;
+		}
+	}
+
+	//add new channel with mode (o) 
 	if (it_channel == listChannels.end())
 	{
-		my_channel = channels(name, pass);
+		mode += "o";
+		if (!pass.empty())
+			mode += "k";
+		my_channel = new channels(name, pass, mode);
+		my_channel->operators.insert(std::pair<int, Client>(it_map_client->first, my_client));
 	}
-	//which client
-	while (it_map_client != clients_map.end())
+
+	//check limit in mode (+l)
+	if ((my_channel->get_mode()).find("l") == std::string::npos)
 	{
-		if (it_map_client->first == it_client->fd)
+		if (my_channel->client.size() > my_channel->get_limite())
 		{
-			my_client = it_map_client->second;
-			// std::cout << it_map_client->first << "*******" << std::endl;
-			break ;
+			message = ":server 471 " + my_client.get_client_nick() + " " + it_channel->second->get_name() + " :Cannot join channel (+l)\n";
+			send_message(it_client->fd, message);
+			return;
 		}
-		it_map_client++;
-	}
-	if (it_map_client == clients_map.end())
-	{
-		std::cout << "error client not found" << std::endl;
-		exit(1);
 	}
 
-	//banned list
-	it_map_client = my_channel.banned.begin();
-	while (it_map_client != my_channel.banned.end())
+	//check invite-only in mode (+i)
+	if ((my_channel->get_mode()).find("i") == std::string::npos)
 	{
-		if (it_map_client->first == it_client->fd)
-			break ;
-		it_map_client++;
-	}
-	if (it_map_client != my_channel.banned.end())
-	{
-		std::cout << "error client is banned" << std::endl;
-		return ;
-	}
-	std::cout << it_client->fd <<"fd ==" <<std::endl;
-	my_channel.client.insert(std::pair<int, Client>(it_client->fd, my_client));
-
-	listChannels.insert(std::pair<std::string, channels>(name, my_channel));
-
-		ClientIter client_iter;
-		channelsIter itc = listChannels.begin();
-		while (itc != listChannels.end())
+		if (!my_channel->get_invited())
 		{
-			client_iter = itc->second.client.begin();
-			std::cout << itc->second.client.size() << "---" << std::endl;
-			std::cout << "channel [" << itc->second.get_name() << "] has key (" << itc->second.get_password() << ") | with this clients {";
-			while (client_iter != itc->second.client.end())
-			{
-				std::cout << client_iter->second.get_client_socket() << ", ";
-				client_iter++;
-			}
-			std::cout <<"}"<<std::endl;
-			itc++;
+			message = ":server 473 " + my_client.get_client_nick() + " " + it_channel->second->get_name() + " :Cannot join channel (+i)\n";
+			send_message(it_client->fd, message);
+			return;
 		}
-
-
+	}
+	// insert a channel successfully
+	my_channel->client.insert(std::pair<int, Client>(it_client->fd, my_client));
+	listChannels.insert(std::pair<std::string, channels *>(name, my_channel));
+	message = ":server 353 " + my_client.get_client_nick() + " " + name +" :@" + my_channel->get_users() + "\n";
+	send_message(it_client->fd, message);
 }
 
 void	Server::join(VecStr command, PollIter it_client)
 {
 	VecIter it = command.begin();
+	ClientIter my_client_it = clients_map.begin();
 	std::string pass;
 	std::string name;
+	std::string message;
 	std::istringstream names;
 	std::istringstream passwords;
+	
+	//which client
+	while (my_client_it != clients_map.end())
+	{
+		if (my_client_it->first == it_client->fd)
+			break;
+		my_client_it++;
+	}
+	//error if no client (possible ctrl + C)
+	if (my_client_it == clients_map.end())
+	{
+		std::cout << "error no client " << std::endl;
+		exit(1);
+	}
+	//check params and join
 	if (command.size() < 3 && !command.empty())
 	{
 		names.str(*it++);
@@ -126,42 +153,34 @@ void	Server::join(VecStr command, PollIter it_client)
 				} 
 				if (itch == listChannels.end())
 				{
-					// listChannels.insert(std::pair<std::string, channels>(name, new_channel));
 					join_channels(it_client, name, pass);
 				}
 			}
 			else
-				std::cout << "error" <<std::endl;
+			{
+				message = ":server 403 " + my_client_it->second.get_client_nick() + " " + name + " :No such channel\n";
+				send_message(it_client->fd, message);
+			}
 			pass.clear();
 		}
-
-	
-	// while (it != command.end())
-	// 		std::cout << "[" << *it++ << "]" << std::endl;
-	// 	std::cout << "*****************" << std::endl;
-	// channelsIter itchan = listChannels.begin();
-	// while (itchan != listChannels.end())
-	// {
-	// 		// std::cout << "name : " << itchan->first < << ")" << std::endl;
-	// 		itchan++;
-	// }
-		
+	}
+	else
+	{
+		message = ":server 461 " + my_client_it->second.get_client_nick() + " JOIN :Not enough parameters\n";
+		send_message(it_client->fd, message);
 	}
 }
 
 void	Server::read_command(PollIter it_client)
 {
-	VecStr command = ft_split(client_msg.c_str(), ' ');
+	VecStr command = split(client_msg, ' ');
 	VecIter it = command.begin();
-	std::string str = to_upper((*it).c_str());
-	if (!strcmp(str.c_str(), "JOIN"))
+	ft_upper(*it);
+	if (!strcmp((*it).c_str(), "JOIN"))
 	{
 		command.erase(it);
 		join(command, it_client);
 	}
-	it = command.begin();
-		// while (it != command.end())
-		// 	std::cout << "(" << *it++ << ")" << std::endl;
 }
 
 bool is_it_digits(std::string str){
@@ -283,9 +302,36 @@ void Server::read_client_data(PollIter it){
 		//ay haja rseltiha  mn lclient atl9aha fhad lbuffer les command dima ayb9aw wjiwkom hna b7all "pass kick" wa majawarahoma
 		//hna fin t9dar tjawb lclient khdem bhad send li lta7t 3tiha it->fd o kteb lclient li bghiti
 		get_client_info(it->fd);
-		read_command(it);
 		std::cout << "Received from client : " << client_msg << std::endl;
-		
+		read_command(it);
+
+	// **** show map of channels ****
+	//{
+
+		// ClientIter client_iter;
+		// ClientIter operator_iter;
+		// channelsIter itc = listChannels.begin();
+		// while (itc != listChannels.end())
+		// {
+		// 	client_iter = itc->second->client.begin();
+		// 	std::cout << "*	channel [" << itc->second->get_name() << "] has key (" << itc->second->get_password() << ") modes = " << itc->second->get_mode() <<"| with this clients {";
+		// 	while (client_iter != itc->second->client.end())
+		// 	{
+		// 		operator_iter = itc->second->operators.begin();
+		// 		while (operator_iter != itc->second->operators.end())
+		// 		{
+		// 			if (operator_iter->first == client_iter->first)
+		// 				std::cout << " Operator " ;
+		// 			operator_iter++;
+		// 		}
+		// 		std::cout << client_iter->second.get_client_socket() << ", ";
+		// 		client_iter++;
+		// 	}
+		// 	std::cout <<"}"<<std::endl;
+		// 	itc++;
+		// }
+	//}	
+
 		send(it->fd, "Message received\n", 17, 0);
 	}
 }

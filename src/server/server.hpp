@@ -22,8 +22,9 @@ public:
 	typedef std::vector<std::string>						VecStr;
 	typedef std::vector<std::string>::iterator				VecIter;
 	//Channels
-	typedef std::map<std::string, channels>					mapChannels;
-	typedef std::map<std::string, channels>::iterator		channelsIter;
+	typedef std::map<std::string, channels *>					mapChannels;
+	typedef std::map<std::string, channels *>::iterator		channelsIter;
+
 	
 	static void		send_message(int fd, std::string message);
 	void			create_bind_listen(int port);
@@ -76,6 +77,6 @@ std::vector<std::string> split(std::string str, char c);
 std::string trim_spaces(std::string str);
 std::vector<std::string> ft_split(char const *s, char c);
 std::string to_upper(const char *str);
-
+void	ft_upper(std::string &msg);
 
 #endif
