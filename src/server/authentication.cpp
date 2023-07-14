@@ -146,7 +146,7 @@ int Server::get_client_info(int fd)
 	ClientIter			client_iter;
 
 	client_iter = clients_map.find(fd);
-	client_msg = buffer;
+	client_msg = rest;
 	addrip = get_clientip(fd);
 	hostname = inet_ntoa(addrip);
 	client_iter->second.set_clientip(hostname);

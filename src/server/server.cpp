@@ -256,7 +256,6 @@ void Server::accept_new_client()
 void Server::read_client_data(PollIter it){
 	ClientIter client_iter;
 	VecIter		vec_iter;
-	std::string	tmp;
 
 	if (it->revents & (POLLHUP | POLL_ERR)){
 		printf("Client disconnected\n");
@@ -276,21 +275,16 @@ void Server::read_client_data(PollIter it){
 	}
 	else if (it->revents & POLLIN){
 		bzero(buffer, BUFFERSIZE - 1);
-		int recv_len = recv(it->fd, buffer, BUFFERSIZE, 0);
-		tmp = buffer;
-		if (tmp.find('\n') == std::string::npos)
-		{
-			std::cout<<"hello"<<std::endl;
-			rest += tmp;
+		int recv_len = read(it->fd, buffer, BUFFERSIZE - 1);
+		buffer[recv_len] = '\0';
+		rest += buffer;
+		if (rest.find('\n') == std::string::npos)
 			return;
-		}
 		//ay haja rseltiha  mn lclient atl9aha fhad lbuffer les command dima ayb9aw wjiwkom hna b7all "pass kick" wa majawarahoma
 		//hna fin t9dar tjawb lclient khdem bhad send li lta7t 3tiha it->fd o kteb lclient li bghiti
-		buffer[recv_len] = '\0';
 		get_client_info(it->fd);
-		 
 		read_command(it);
-		std::cout << "Received from client : " << rest << std::endl;
+		std::cout << "Received from client : " << client_msg << std::endl;
 		
 		send(it->fd, "Message received\n", 17, 0);
 	}
@@ -312,11 +306,11 @@ Server::Server(char **av)
 			exit(1);
 		}
 		PollFds tmp = poll_fds;
-		for (PollIter it = tmp.begin(); it != tmp.end() && poll_result > 0 ; it++){
+		for (PollIter it = tmp.begin(); it != tmp.end() && poll_result > 0; it++){
 			if (it->revents & POLLIN && it->fd == server_socket){
 				accept_new_client();
 				poll_result--;
-			}else if (it->revents & POLLIN){
+			}else if(it->revents & POLLIN){
 				read_client_data(it);
 				poll_result--;
 			}
