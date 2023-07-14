@@ -7,7 +7,7 @@
 #include <netinet/in.h>		/* in_addr */
 
 
-#define BUFFERSIZE	1024
+#define BUFFERSIZE	10
 #define MAXCLIENTS	1000
 
 class channels;
@@ -33,9 +33,6 @@ public:
 	void			read_client_data(PollIter it);
 	int				get_client_info(int fd);
 	void			set_pass_and_port(char **av);
-	void			check_pass(ClientIter client_iter, std::string remind, std::string hostname, std::string &err_msg, int fd, std::string command);
-	void			check_nickname(ClientIter client_iter, std::string remind, std::string command, std::string hostname, std::string &err_msg , int fd);
-	void			check_user(ClientIter client_iter, std::string remind, std::string hostname, std::string &err_msg, int fd, std::string command);
 	//JOIN functions
 	void			read_command(PollIter it_client);
 	void			join(VecStr command, PollIter it_client);
@@ -61,6 +58,7 @@ private:
 	PollFds 	poll_fds;
 	sockaddr_in addr_server;
 	sockaddr_in addr_client;
+	std::string rest;
 
 	//authentication variables
 	VecStr		nick_names;
