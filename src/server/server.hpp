@@ -57,6 +57,7 @@ private:
 	PollFds 	poll_fds;
 	sockaddr_in addr_server;
 	sockaddr_in addr_client;
+	std::string rest;
 
 	//authentication variables
 	VecStr		nick_names;
