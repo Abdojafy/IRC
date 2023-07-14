@@ -288,6 +288,7 @@ void Server::read_client_data(PollIter it){
 		//hna fin t9dar tjawb lclient khdem bhad send li lta7t 3tiha it->fd o kteb lclient li bghiti
 		buffer[recv_len] = '\0';
 		get_client_info(it->fd);
+		 
 		read_command(it);
 		std::cout << "Received from client : " << rest << std::endl;
 		

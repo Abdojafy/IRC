@@ -168,7 +168,6 @@ int Server::get_client_info(int fd)
 		nick_names.push_back(nick);
 		client_iter->second.set_registred();
 		client_iter->second.set_client_data(username, realname, pass, nick);
-		std::cout<<"username = "<<username<<" realname = "<<realname<<" pass = "<<pass<<" nick = "<<nick<<std::endl;
 		welcome_msg = set_welcome_msg(hostname, client_iter);
 		send_message(fd, welcome_msg);
 	}
