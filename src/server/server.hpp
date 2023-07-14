@@ -24,15 +24,6 @@ public:
 	//Channels
 	typedef std::map<std::string, channels>					mapChannels;
 	typedef std::map<std::string, channels>::iterator		channelsIter;
-
-
-
-	typedef std::vector<pollfd>::iterator			PollIter;
-	typedef std::vector<pollfd> 					PollFds;
-	typedef std::map<int, Client>::iterator			ClientIter;
-	typedef std::map<int, Client>					ClientMap;
-	typedef std::vector<std::string>				VecStr;
-	typedef std::vector<std::string>::iterator		VecIter;
 	
 	static void		send_message(int fd, std::string message);
 	void			create_bind_listen(int port);
@@ -41,9 +32,6 @@ public:
 	void			read_client_data(PollIter it);
 	int				get_client_info(int fd);
 	void			set_pass_and_port(char **av);
-	void			check_pass(ClientIter client_iter, std::string remind, std::string hostname, std::string &err_msg, int fd, std::string command);
-	void			check_nickname(ClientIter client_iter, std::string remind, std::string command, std::string hostname, std::string &err_msg , int fd);
-	void			check_user(ClientIter client_iter, std::string remind, std::string hostname, std::string &err_msg, int fd, std::string command);
 	//JOIN functions
 	void			read_command(PollIter it_client);
 	void			join(VecStr command, PollIter it_client);

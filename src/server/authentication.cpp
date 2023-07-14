@@ -71,20 +71,24 @@ void	Server::check_nickname(ClientIter client_iter, std::string remind, std::str
 	}
 	else
 		nick = seminick;
-	nick_iter = std::find(nick_names.begin(), nick_names.end(), nick);
+	
 	if (!command.compare("NICK") && !client_iter->second.get_registred())
 	{
+		nick_iter = std::find(nick_names.begin(), nick_names.end(), nick);
 		if (remind.empty())
-			send_message(fd, hostname + " 431 :No nickname given\n");
+			send_message(fd, ":" + hostname + " 431 :No nickname given\r\n");
 		else if (nick_iter != nick_names.end())
-			send_message(fd, hostname + " 433 * :Nickname is already in use.\n");
+			send_message(fd, ":" + hostname + " 433 * :Nickname is already in use.\r\n");
 		else
 			client_iter->second.increment_isvalid(command);
 	}
 	else if (!command.compare("NICK") && client_iter->second.get_registred()){
 		oldnick = client_iter->second.get_client_nick();
+		nick_iter = std::find(nick_names.begin(), nick_names.end(), oldnick);
 		if (nick_iter != nick_names.end())
 			nick_names.erase(nick_iter);
+		nick_names.push_back(nick);
+		send_message(fd,  ":" + oldnick +"!" + hostname + " " + command + " :" + nick + "\r\n");
 		client_iter->second.set_client_nick(nick);
 	}
 }
@@ -96,9 +100,9 @@ void	Server::check_user(ClientIter client_iter, std::string remind, std::string 
 
 	remindvec = split(remind, ' ');
 	if (client_iter->second.get_registred())
-		send_message(fd, hostname + " 462 :You may not reregister\n");
+		send_message(fd,  ":" + hostname + " 462 :You may not reregister\r\n");
 	else if (remindvec.size() < 4)
-		send_message(fd, hostname + " 461 " + command + " :Not enough parameters\n");
+		send_message(fd,  ":" + hostname + " 461 " + command + " :Not enough parameters\r\n");
 	else
 	{
 		username = *remindvec.begin();
@@ -110,11 +114,11 @@ void	Server::check_user(ClientIter client_iter, std::string remind, std::string 
 void	Server::check_pass(ClientIter client_iter, std::string remind, std::string hostname, int fd, std::string command){
 
 	if (client_iter->second.get_registred())
-		send_message(fd, hostname + " 462 :You may not reregister\n");
+		send_message(fd, ":" + hostname + " 462 :You may not reregister\r\n");
 	else if (remind.empty())
-		send_message(fd, hostname + " 461 " + command + " :Not enough parameters\n");
+		send_message(fd, ":" + hostname + " 461 " + command + " :Not enough parameters\r\n");
 	else if (remind.compare(password))
-		send_message(fd, hostname + "464 :Password Incorrect\n");
+		send_message(fd, ":" + hostname + "464 :Password Incorrect\r\n");
 	else
 	{
 		pass = remind;
@@ -126,9 +130,7 @@ void	Server::check_pass(ClientIter client_iter, std::string remind, std::string 
 std::string Server::set_welcome_msg(std::string hostname, ClientIter client_iter){
 	
 	std::string msg;
-
-	msg = hostname + " 001 " + client_iter->second.get_client_nick() + " :Welcome to the IRC network," + client_iter->second.get_client_nick() + "!\n";
-	msg += hostname + " 002 " + client_iter->second.get_client_nick() + " :Welcome to the Real IRC server!\n";
+	msg = ":" + hostname + " 001 " + client_iter->second.get_client_nick() + " :Welcome to the IRC network," + client_iter->second.get_client_nick() + "!\r\n";
 
 	return msg;
 }
@@ -156,9 +158,9 @@ int Server::get_client_info(int fd)
 	ft_upper(command);
 	std::getline (ss, remind, '\0');
 	remind = trim_spaces(remind);
-	check_nickname(client_iter, remind, command, hostname, fd);
-	welcome_msg = set_welcome_msg(hostname, client_iter);
-	if (!command.compare("PASS"))
+	if (!command.compare("NICK"))
+		check_nickname(client_iter, remind, command, hostname, fd);
+	else if (!command.compare("PASS"))
 		check_pass(client_iter, remind, hostname, fd, command);
 	else if (!command.compare("USER"))
 		check_user(client_iter, remind, hostname, fd, command);
@@ -166,6 +168,8 @@ int Server::get_client_info(int fd)
 		nick_names.push_back(nick);
 		client_iter->second.set_registred();
 		client_iter->second.set_client_data(username, realname, pass, nick);
+		std::cout<<"username = "<<username<<" realname = "<<realname<<" pass = "<<pass<<" nick = "<<nick<<std::endl;
+		welcome_msg = set_welcome_msg(hostname, client_iter);
 		send_message(fd, welcome_msg);
 	}
 	return 0;
