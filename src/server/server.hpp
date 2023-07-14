@@ -7,7 +7,7 @@
 #include <netinet/in.h>		/* in_addr */
 
 
-#define BUFFERSIZE	1024
+#define BUFFERSIZE	10
 #define MAXCLIENTS	1000
 
 class channels;

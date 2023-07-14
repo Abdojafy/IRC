@@ -76,9 +76,9 @@ void	Server::check_nickname(ClientIter client_iter, std::string remind, std::str
 	{
 		nick_iter = std::find(nick_names.begin(), nick_names.end(), nick);
 		if (remind.empty())
-			send_message(fd, ":" + hostname + " 431 :No nickname given\r\n");
+			send_message(fd, ":" + hostname + " 431 * NICK :No nickname given\r\n");
 		else if (nick_iter != nick_names.end())
-			send_message(fd, ":" + hostname + " 433 * :Nickname is already in use.\r\n");
+			send_message(fd, ":" + hostname + " 433 * NICK :Is already in use.\r\n");
 		else
 			client_iter->second.increment_isvalid(command);
 	}
@@ -88,7 +88,7 @@ void	Server::check_nickname(ClientIter client_iter, std::string remind, std::str
 		if (nick_iter != nick_names.end())
 			nick_names.erase(nick_iter);
 		nick_names.push_back(nick);
-		send_message(fd,  ":" + oldnick +"!" + hostname + " " + command + " :" + nick + "\r\n");
+		send_message(fd,  ":" + oldnick +"!" + hostname + " : " + nick + "\r\n");
 		client_iter->second.set_client_nick(nick);
 	}
 }
@@ -100,9 +100,9 @@ void	Server::check_user(ClientIter client_iter, std::string remind, std::string 
 
 	remindvec = split(remind, ' ');
 	if (client_iter->second.get_registred())
-		send_message(fd,  ":" + hostname + " 462 :You may not reregister\r\n");
+		send_message(fd,  ":" + hostname + " 462 USER :You may not reregister\r\n");
 	else if (remindvec.size() < 4)
-		send_message(fd,  ":" + hostname + " 461 " + command + " :Not enough parameters\r\n");
+		send_message(fd,  ":" + hostname + " 461 USER :Not enough parameters\r\n");
 	else
 	{
 		username = *remindvec.begin();
@@ -114,11 +114,11 @@ void	Server::check_user(ClientIter client_iter, std::string remind, std::string 
 void	Server::check_pass(ClientIter client_iter, std::string remind, std::string hostname, int fd, std::string command){
 
 	if (client_iter->second.get_registred())
-		send_message(fd, ":" + hostname + " 462 :You may not reregister\r\n");
+		send_message(fd, ":" + hostname + " 462 PASS :You may not reregister\r\n");
 	else if (remind.empty())
-		send_message(fd, ":" + hostname + " 461 " + command + " :Not enough parameters\r\n");
+		send_message(fd, ":" + hostname + " 461 " + command + "PASS :Not enough parameters\r\n");
 	else if (remind.compare(password))
-		send_message(fd, ":" + hostname + "464 :Password Incorrect\r\n");
+		send_message(fd, ":" + hostname + "464 PASS :Password Incorrect\r\n");
 	else
 	{
 		pass = remind;
