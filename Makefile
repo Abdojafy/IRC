@@ -2,7 +2,7 @@ NAME =  ircserv
 
 OBJECTS = objects
 
-HEADERS = $(wildcard inc/*.hpp) $(wildcard src/**/*.hpp) $(wildcard src/httpserver/**/*.hpp);
+HEADERS = $(wildcard inc/*.hpp) $(wildcard src/**/*.hpp) $(wildcard src/server/**/*.hpp)
 
 INC = inc/
 
