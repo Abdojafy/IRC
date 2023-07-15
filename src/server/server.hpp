@@ -7,7 +7,7 @@
 #include <netinet/in.h>		/* in_addr */
 
 
-#define BUFFERSIZE	10
+#define BUFFERSIZE	1024
 #define MAXCLIENTS	1000
 
 class channels;
@@ -22,17 +22,22 @@ public:
 	typedef std::vector<std::string>						VecStr;
 	typedef std::vector<std::string>::iterator				VecIter;
 	//Channels
-	typedef std::map<std::string, channels *>					mapChannels;
+	typedef std::map<std::string, channels *>				mapChannels;
 	typedef std::map<std::string, channels *>::iterator		channelsIter;
 
-	
-	static void		send_message(int fd, std::string message);
-	void			create_bind_listen(int port);
-	void			accept_new_client();
-	struct in_addr	get_clientip(int fd);
-	void			read_client_data(PollIter it);
-	int				get_client_info(int fd);
-	void			set_pass_and_port(char **av);
+	//lclient map t9dar taccidi lih mn aya blassa nta fiha dir Server::clients_map 
+	static ClientMap	clients_map;
+	//send message t9dar tsendi biha aya 7aja lclient 3tiha lfd o lmsg 7ta hia t9dar t3ayt liha mnin mabghiti dir Server::send_message
+	static void			send_message(int fd, std::string message);
+	void				create_bind_listen(int port);
+	void				accept_new_client();
+	struct in_addr		get_clientip(int fd);
+	//hna kan9ra aya msg jani mn 3and lclient
+	void				read_client_data(PollIter it);
+	//hna fin kanregistre client jdid
+	int					get_client_info(int fd);
+	void				set_pass_and_port(char **av);
+	void				remove_client(int fd);
 	//JOIN functions
 	void			read_command(PollIter it_client);
 	void			join(VecStr command, PollIter it_client);
@@ -46,6 +51,7 @@ public:
 	void			check_user(ClientIter client_iter, std::string remind, std::string hostname, int fd, std::string command);
 
 private:
+	//socket hia fd
 	int			server_socket;
 	int			client_socket;
 	int			poll_result;
@@ -54,11 +60,9 @@ private:
 	std::string	password;
 	char 		buffer[BUFFERSIZE];
 	std::string	client_msg;
-	ClientMap	clients_map;
 	PollFds 	poll_fds;
 	sockaddr_in addr_server;
 	sockaddr_in addr_client;
-	std::string rest;
 
 	//authentication variables
 	VecStr		nick_names;

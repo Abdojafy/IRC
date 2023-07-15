@@ -75,20 +75,20 @@ void	Server::check_nickname(ClientIter client_iter, std::string remind, std::str
 	if (!command.compare("NICK") && !client_iter->second.get_registred())
 	{
 		nick_iter = std::find(nick_names.begin(), nick_names.end(), nick);
-		if (remind.empty())
-			send_message(fd, ":" + hostname + " 431 * NICK :No nickname given\r\n");
-		else if (nick_iter != nick_names.end())
+		if (nick_iter != nick_names.end())
 			send_message(fd, ":" + hostname + " 433 * NICK :Is already in use.\r\n");
 		else
 			client_iter->second.increment_isvalid(command);
 	}
+	if (remind.empty())
+		send_message(fd, ":" + hostname + " 431 * NICK :No nickname given\r\n");
 	else if (!command.compare("NICK") && client_iter->second.get_registred()){
 		oldnick = client_iter->second.get_client_nick();
 		nick_iter = std::find(nick_names.begin(), nick_names.end(), oldnick);
 		if (nick_iter != nick_names.end())
 			nick_names.erase(nick_iter);
 		nick_names.push_back(nick);
-		send_message(fd,  ":" + oldnick +"!" + hostname + " : " + nick + "\r\n");
+		send_message(fd,  ":" + oldnick +"!" + hostname  + nick + "\r\n");
 		client_iter->second.set_client_nick(nick);
 	}
 }
@@ -130,8 +130,7 @@ void	Server::check_pass(ClientIter client_iter, std::string remind, std::string 
 std::string Server::set_welcome_msg(std::string hostname, ClientIter client_iter){
 	
 	std::string msg;
-	msg = ":" + hostname + " 001 " + client_iter->second.get_client_nick() + " :Welcome to the IRC network," + client_iter->second.get_client_nick() + "!\r\n";
-
+	msg = ":" + hostname + " 001 " + client_iter->second.get_client_nick() + " :Welcome to the IRC network, " + client_iter->second.get_client_nick() + "!\r\n";
 	return msg;
 }
 
@@ -146,7 +145,6 @@ int Server::get_client_info(int fd)
 	ClientIter			client_iter;
 
 	client_iter = clients_map.find(fd);
-	client_msg = rest;
 	addrip = get_clientip(fd);
 	hostname = inet_ntoa(addrip);
 	client_iter->second.set_clientip(hostname);
@@ -158,6 +156,8 @@ int Server::get_client_info(int fd)
 	ft_upper(command);
 	std::getline (ss, remind, '\0');
 	remind = trim_spaces(remind);
+	if (!client_msg.compare("QUIT :"))
+		remove_client(fd);
 	if (!command.compare("NICK"))
 		check_nickname(client_iter, remind, command, hostname, fd);
 	else if (!command.compare("PASS"))
