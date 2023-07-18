@@ -125,6 +125,7 @@ void Server::read_client_data(PollIter it){
 		//ay haja rseltiha  mn lclient atl9aha fhad lbuffer les command dima ayb9aw wjiwkom hna b7all "pass kick" wa majawarahoma
 		//hna fin t9dar tjawb lclient khdem bhad send li lta7t 3tiha it->fd o kteb lclient li bghiti
 		exec_command(it->fd);
+		read_command(it);
 		std::cout << "Received from client : " << client_msg << std::endl;
 		send(it->fd, "Message received\n", 17, 0);
 		client_msg.clear();

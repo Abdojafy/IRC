@@ -3,7 +3,7 @@
 
 #include "ircserv.hpp"
 #include "../clients/client.hpp"
-#include "channels.hpp"
+#include "../channels/channels.hpp"
 #include <netinet/in.h>		/* in_addr */
 
 
