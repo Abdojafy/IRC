@@ -39,12 +39,17 @@ public:
 	int					exec_command(int fd);
 	void				set_pass_and_port(char **av);
 	void				remove_client(int fd);
+	
 	//JOIN functions
 	void			read_command(PollIter it_client);
 	void			join(VecStr command, PollIter it_client);
 	bool			check_channel_name(std::string name);
 	void			join_channels(PollIter it_client, std::string name, std::string pass);
 
+	//KICK functions
+	void			kick(VecStr command, PollIter it_client);
+
+	
 	std::string		set_welcome_msg(std::string hostname, ClientIter client_iter);
 
 	void			check_pass(ClientIter client_iter, std::string remind, std::string hostname, int fd, std::string command);
