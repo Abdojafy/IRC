@@ -32,10 +32,11 @@ public:
 	void				create_bind_listen(int port);
 	void				accept_new_client();
 	struct in_addr		get_clientip(int fd);
+	void				client_isregistred(ClientIter client_iter, std::string hostname, int fd);
 	//hna kan9ra aya msg jani mn 3and lclient
 	void				read_client_data(PollIter it);
 	//hna fin kanregistre client jdid
-	int					get_client_info(int fd);
+	int					exec_command(int fd);
 	void				set_pass_and_port(char **av);
 	void				remove_client(int fd);
 	//JOIN functions

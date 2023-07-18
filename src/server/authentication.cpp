@@ -134,14 +134,25 @@ std::string Server::set_welcome_msg(std::string hostname, ClientIter client_iter
 	return msg;
 }
 
-int Server::get_client_info(int fd)
+void Server::client_isregistred(ClientIter client_iter, std::string hostname, int fd){
+	std::string			welcome_msg;
+	if (client_iter->second.get_isvalid() == 3 && !client_iter->second.get_registred()){
+		nick_names.push_back(nick);
+		client_iter->second.set_registred();
+		client_iter->second.set_client_data(username, realname, pass, nick);
+		welcome_msg = set_welcome_msg(hostname, client_iter);
+		send_message(fd, welcome_msg);
+	}
+}
+
+
+int Server::exec_command(int fd)
 {
 	std::stringstream	ss;
 	std::string			command;
 	std::string			hostname;
 	in_addr				addrip;
 	std::string			remind;
-	std::string			welcome_msg;
 	ClientIter			client_iter;
 
 	client_iter = clients_map.find(fd);
@@ -164,12 +175,31 @@ int Server::get_client_info(int fd)
 		check_pass(client_iter, remind, hostname, fd, command);
 	else if (!command.compare("USER"))
 		check_user(client_iter, remind, hostname, fd, command);
-	if (client_iter->second.get_isvalid() == 3 && !client_iter->second.get_registred()){
-		nick_names.push_back(nick);
-		client_iter->second.set_registred();
-		client_iter->second.set_client_data(username, realname, pass, nick);
-		welcome_msg = set_welcome_msg(hostname, client_iter);
-		send_message(fd, welcome_msg);
+	client_isregistred(client_iter, hostname, fd);
+	if (!command.compare("PRIVMSG"))
+	{
+		std::stringstream	ss;
+		std::string			name;
+		VecStr				vec;
+		VecIter				nickname_it;
+		ClientIter			client_it;
+		ss << remind;
+		std::getline(ss, name, ' ');
+		vec = split(remind, ' ');
+		nickname_it = std::find(nick_names.begin(), nick_names.end(), name);
+		if (vec.size() == 1)
+			send_message(fd, ":" + client_iter->second.get_clientip() + " 412 " + client_iter->second.get_client_nick() + " " + name + " :No text to send\n\r");
+		else if (nickname_it != nick_names.end())
+		{
+			for(client_it = clients_map.begin(); client_it != clients_map.end(); client_it++){
+				if (client_it->second.get_client_nick() == name)
+					break;
+			}
+			send_message(client_it->first, ":" + client_iter->second.get_client_nick() + "!~" + client_iter->second.get_client_username()+ "@" + client_iter->second.get_clientip() + " " + command + " " + remind + "\n\r");
+		}
+		else
+			send_message(fd, ":" + client_iter->second.get_clientip() + " 401 " + client_iter->second.get_client_nick() + " " + name + " :No such nick/channel\n\r");
+
 	}
 	return 0;
 }
