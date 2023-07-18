@@ -50,6 +50,7 @@ public:
 	void			check_pass(ClientIter client_iter, std::string remind, std::string hostname, int fd, std::string command);
 	void			check_nickname(ClientIter client_iter, std::string remind, std::string command, std::string hostname, int fd);
 	void			check_user(ClientIter client_iter, std::string remind, std::string hostname, int fd, std::string command);
+	void			privmsg(ClientIter client_iter, std::string remind, std::string command, int fd);
 
 private:
 	//socket hia fd
