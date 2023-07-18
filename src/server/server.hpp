@@ -2,7 +2,7 @@
 #define SERVER_HPP
 
 #include "ircserv.hpp"
-#include "client.hpp"
+#include "../clients/client.hpp"
 #include "channels.hpp"
 #include <netinet/in.h>		/* in_addr */
 
@@ -84,5 +84,6 @@ std::string trim_spaces(std::string str);
 std::vector<std::string> ft_split(char const *s, char c);
 std::string to_upper(const char *str);
 void	ft_upper(std::string &msg);
+void remove_new_line(std::string &msg);
 
 #endif
