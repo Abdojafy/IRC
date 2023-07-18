@@ -2,7 +2,7 @@
 #define CHANNELS_HPP
 
 #include"ircserv.hpp"
-#include "client.hpp"
+#include "../clients/client.hpp"
 
 class channels
 {
