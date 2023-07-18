@@ -22,6 +22,8 @@ public:
 	void		set_client_data(std::string username, std::string realname, std::string pass, std::string nick);
 	void		set_client_nick(std::string  nick);
 	std::string	get_client_nick();
+	std::string	get_client_username();
+	std::string	get_client_realname();
 	//get client (ip : hotname)
 	std::string	get_clientip();
 

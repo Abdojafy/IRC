@@ -54,6 +54,13 @@ std::string Client::get_client_nick(){
 	return this->nick;
 }
 
+std::string Client::get_client_username(){
+	return this->username;
+}
+std::string Client::get_client_realname(){
+	return this->realname;
+}
+
 std::string Client::get_clientip(){
 	return this->clientip;
 }
