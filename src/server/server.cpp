@@ -1,6 +1,8 @@
 #include "server.hpp"
 
 std::map<int, Client> Server::clients_map;
+
+
 bool is_it_digits(std::string str){
 	for (size_t i = 0; i < str.length(); i++){
 		if  (std::isdigit(str[i]))
