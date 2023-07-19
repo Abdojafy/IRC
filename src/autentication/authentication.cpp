@@ -4,7 +4,6 @@ struct in_addr Server::get_clientip(int fd){
 	ClientIter			client_iter;
 
 	client_iter = clients_map.find(fd);
-	
 	return (client_iter->second.get_client_address().sin_addr);
 }
 

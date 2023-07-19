@@ -4,13 +4,15 @@
 #include"ircserv.hpp"
 #include "../clients/client.hpp"
 
+
 class channels
 {
 private:
-	std::string name;
-	std::string mode;
-	std::string password;
+	std::string 	name;
+	std::string 	mode;
+	std::string 	password;
 	size_t			limite;
+	size_t			classement;
 	bool invited;
 public:
 	typedef std::map<int, Client>::iterator					ClientIter;
@@ -29,8 +31,10 @@ public:
 	std::string 	get_password();
 	void			set_password(std::string &new_password);
 	std::string		get_users();
-	size_t				get_limite();
+	size_t			get_limite();
 	void			set_limite(size_t limite);
+	size_t			get_classement();
+	void			set_classement(size_t classement);
 	bool			get_invited();
 	void			set_invited(bool invited);
 };

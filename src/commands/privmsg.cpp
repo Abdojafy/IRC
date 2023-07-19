@@ -37,5 +37,5 @@ void	Server::privmsg(ClientIter client_iter, std::string remind, std::string com
 		}
 	}
 	else
-		send_message(fd, ":" + client_iter->second.get_clientip() + " 401 " + client_iter->second.get_client_nick() + " " + name + " :No such nick/channel\n\r");
+		send_message(fd, ":" + client_iter->second.get_clientip() + " 401 " + client_iter->second.get_client_nick() + " " + name + " :No such nick/channel\r\n");
 }

@@ -38,7 +38,7 @@ void Server::set_pass_and_port(char **av){
 void Server::send_message(int fd, std::string message)
 {
 	if (send(fd, message.c_str(), message.length(), 0) == -1)
-	perror("send");
+		perror("send");
 }
 
 void Server::create_bind_listen(int port)
@@ -127,7 +127,11 @@ void Server::read_client_data(PollIter it){
 		//ay haja rseltiha  mn lclient atl9aha fhad lbuffer les command dima ayb9aw wjiwkom hna b7all "pass kick" wa majawarahoma
 		//hna fin t9dar tjawb lclient khdem bhad send li lta7t 3tiha it->fd o kteb lclient li bghiti
 		exec_command(it->fd);
-		read_command(it);
+		ClientIter this_client = clients_map.find(it->fd);
+		if (this_client->second.get_registred())
+			read_command(it);
+		else
+			std::cout << "fuck you abdellah azeroual" << std::endl;
 		std::cout << "Received from client : " << client_msg << std::endl;
 		send(it->fd, "Message received\n", 17, 0);
 		client_msg.clear();
