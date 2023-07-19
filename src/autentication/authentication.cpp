@@ -59,6 +59,10 @@ int Server::exec_command(int fd)
 	client_isregistred(client_iter, hostname, fd);
 	if (!command.compare("PRIVMSG"))
 		privmsg(client_iter, remind, command, fd);
+	else if (!command.compare("NOTICE"))
+		notice(client_iter, remind, command, fd);
+	else if (!command.compare("KICK"))
+		kick(client_iter, remind, command, fd, hostname);
 	return 0;
 }
 
