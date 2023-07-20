@@ -115,7 +115,7 @@ void Server::remove_client(int fd)
 
 void Server::read_client_data(PollIter it){
 
-	if (it->revents & (POLLHUP | POLL_ERR))
+	if (it->revents & (POLLHUP | POLLERR))
 		remove_client(it->fd);
 	else if (it->revents & POLLIN){
 		bzero(buffer, BUFFERSIZE - 1);
@@ -130,8 +130,6 @@ void Server::read_client_data(PollIter it){
 		ClientIter this_client = clients_map.find(it->fd);
 		if (this_client->second.get_registred())
 			read_command(it);
-		else
-			std::cout << "fuck you abdellah azeroual" << std::endl;
 		std::cout << "Received from client : " << client_msg << std::endl;
 		send(it->fd, "Message received\n", 17, 0);
 		client_msg.clear();

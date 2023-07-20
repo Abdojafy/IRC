@@ -3,15 +3,12 @@
 std::string Server::help_msg(std::string hostname){
 	std::string str;
 	(void) hostname;
-	str = ":user: 300 * BOT :CHECKNICK (ERROR) No nick given\r\n";
-	// str += "\r\n";
-	// str += "How to use: help + COMMAND\r\n";
-	// str += "\r\n";
-	// str += ":example:\r\n";
-	// str += ":            help privmsg\r\n";
-	// str += ":            help notice\r\n";
-	// str += ":            help kick\r\n";
-	// str += ":            help join . . .\r\n";
+	str = ":Usage Available Commands :[join] [privmsg] [notice] [kick]\r\n";
+	str += ":Usage Available Commands :[user] [topic] [nick] [pass]\r\n";
+	str += ":_____ ___ ___ :___\r\n";
+	str += ":How to use :help + above commands\r\n";
+	str += ":_____ ___ ___ :___\r\n";
+	str += ":Example Command help :join\r\n";
 	return (str);
 }
 

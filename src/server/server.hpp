@@ -5,6 +5,7 @@
 #include "../clients/client.hpp"
 #include "../channels/channels.hpp"
 #include <netinet/in.h>		/* in_addr */
+#include <cstring>
 
 
 #define BUFFERSIZE	1024

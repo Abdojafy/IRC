@@ -1,5 +1,6 @@
 #include "../server/server.hpp"
 
+
 bool	find_char(std::string str, char c)
 {
 	int i = 0;

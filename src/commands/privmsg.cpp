@@ -5,6 +5,7 @@ void	Server::privmsg(ClientIter client_iter, std::string remind, std::string com
 	std::stringstream	ss;
 	std::string			name;
 	VecStr				vec;
+	std::string			msg;
 	VecIter				nickname_it;
 	channels			channel;
 	ClientIter			client_it;
@@ -12,6 +13,7 @@ void	Server::privmsg(ClientIter client_iter, std::string remind, std::string com
 
 	ss << remind;
 	std::getline(ss, name, ' ');
+	std::getline(ss, msg, '\0');
 	vec = split(remind, ' ');
 	nickname_it = std::find(nick_names.begin(), nick_names.end(), name);
 	channelsIter channels_iter = listChannels.find(name);
@@ -27,8 +29,7 @@ void	Server::privmsg(ClientIter client_iter, std::string remind, std::string com
 			}
 		}
 		if (is_nickname){
-			std::cout<<client_it->first<<" helllll-----------------------------"<<std::endl;
-			send_message(client_it->first, ":" + client_iter->second.get_client_nick() + " " + command + " " + client_it->second.get_client_nick() + " :" + remind + "\r\n");
+			send_message(client_it->first, ":" + client_iter->second.get_client_nick() + " " + command + " " + client_it->second.get_client_nick() + " :" + msg + "\r\n");
 		}
 		else{
 			for (ClientIter it = channels_iter->second->client.begin(); it != channels_iter->second->client.end(); it++)

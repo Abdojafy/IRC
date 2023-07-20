@@ -8,7 +8,7 @@ INC = inc/
 
 C++ = c++
 
-CPP_FLAGS = -Wall -Wextra -Werror -std=c++98 -I$(INC)
+CPP_FLAGS = -I$(INC)
 
 SRC =	$(wildcard *.cpp) $(wildcard src/*.cpp) $(wildcard src/**/*.cpp)
 OBJ =  $(addprefix objects/, $(SRC:.cpp=.o))
