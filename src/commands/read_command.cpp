@@ -2,7 +2,7 @@
 
 
 //:zinc.libera.chat 421 youssef yopic :Unknown command
-void	Server::read_command(PollIter it_client)
+void	Server:: read_command(PollIter it_client)
 {
 	VecStr command = split(client_msg, ' ');
 	VecIter it = command.begin();
@@ -32,6 +32,11 @@ void	Server::read_command(PollIter it_client)
 		{
 			command.erase(it);
 			topic(command, it_client);
+		}
+		else if (!strcmp((*it).c_str(), "MODE"))
+		{
+			command.erase(it);
+			modes(command, it_client);
 		}
 		// else
 		// {

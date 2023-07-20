@@ -52,7 +52,7 @@ void	channels::set_topic(std::string &new_topic)
 	this->topic = new_topic;
 }
 
-std::string channels::get_mode()
+std::string& channels::get_mode()
 {
 	return (mode);
 }
@@ -60,6 +60,11 @@ std::string channels::get_mode()
 void	channels::set_mode(std::string &new_mode)
 {
 	this->mode = new_mode;
+}
+
+void	channels::join_mode(std::string new_mode)
+{
+	this->mode += new_mode;
 }
 
 std::string channels::get_password()
@@ -104,11 +109,11 @@ std::string	channels::get_users()
 		{
 			if (it->first == oper->first)
 			{
-				// //space between two operators
-				// if (!oper_name.empty())	
-				// {
-				// 	oper_name += " ";
-				// }
+				//space between two operators
+				if (!oper_name.empty())	
+				{
+					oper_name += " ";
+				}
 				oper_name += "@";
 				oper_name += it->second.get_client_nick();
 				is_oper = true;
