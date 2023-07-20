@@ -26,7 +26,6 @@ void Server::client_isregistred(ClientIter client_iter, std::string hostname, in
 	}
 }
 
-
 int Server::exec_command(int fd)
 {
 	std::stringstream	ss;
@@ -63,6 +62,9 @@ int Server::exec_command(int fd)
 		notice(client_iter, remind, command, fd);
 	else if (!command.compare("KICK"))
 		kick(client_iter, remind, command, fd, hostname);
+	else if (!command.compare("HELP"))
+		boot_help(hostname, fd);
+	
 	return 0;
 }
 

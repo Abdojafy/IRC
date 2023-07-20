@@ -40,6 +40,7 @@ public:
 	void				set_pass_and_port(char **av);
 	void				remove_client(int fd);
 	
+	std::string			help_msg(std::string hostname);
 	//JOIN functions
 	void			read_command(PollIter it_client);
 	void			join(VecStr command, PollIter it_client);
@@ -57,6 +58,7 @@ public:
 	void			privmsg(ClientIter client_iter, std::string remind, std::string command, int fd);
 	void			notice(ClientIter client_iter, std::string remind, std::string command, int fd);
 	void			kick(ClientIter client_iter, std::string remind, std::string command, int fd, std::string hostname);
+	void			boot_help(std::string hostname, int fd);
 
 private:
 	//socket hia fd

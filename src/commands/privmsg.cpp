@@ -26,13 +26,17 @@ void	Server::privmsg(ClientIter client_iter, std::string remind, std::string com
 				break;
 			}
 		}
-		if (is_nickname)
-			send_message(client_it->first, ":" + client_iter->second.get_client_nick() + "!~" + client_iter->second.get_client_username()+ "@" + client_iter->second.get_clientip() + " " + command + " " + remind + "\n\r");
+		if (is_nickname){
+			std::cout<<client_it->first<<" helllll-----------------------------"<<std::endl;
+			send_message(client_it->first, ":" + client_iter->second.get_client_nick() + " " + command + " " + client_it->second.get_client_nick() + " :" + remind + "\r\n");
+		}
 		else{
 			for (ClientIter it = channels_iter->second->client.begin(); it != channels_iter->second->client.end(); it++)
 			{
-				if (it->first != fd)
+				if (it->first != fd){
+					
 					send_message(it->first , ":" + client_iter->second.get_client_nick() + "!~" + client_iter->second.get_client_username()+ "@" + client_iter->second.get_clientip() + " " + command + " " + remind + "\r\n");
+				}
 			}
 		}
 	}
