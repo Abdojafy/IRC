@@ -41,6 +41,17 @@ void	channels::set_name(std::string &new_name)
 	this->name = new_name;
 }
 
+std::string channels::get_topic()
+{
+	return (topic);
+}
+
+
+void	channels::set_topic(std::string &new_topic)
+{
+	this->topic = new_topic;
+}
+
 std::string channels::get_mode()
 {
 	return (mode);
