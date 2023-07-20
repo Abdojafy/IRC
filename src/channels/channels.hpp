@@ -11,6 +11,7 @@ private:
 	std::string 	name;
 	std::string 	mode;
 	std::string 	password;
+	std::string		topic;
 	size_t			limite;
 	size_t			classement;
 public:
@@ -26,6 +27,8 @@ public:
 	~channels();
 	std::string 	get_name();
 	void			set_name(std::string &new_name);
+	std::string 	get_topic();
+	void			set_topic(std::string &new_topic);
 	std::string 	get_mode();
 	void			set_mode(std::string &new_mode);
 	std::string 	get_password();

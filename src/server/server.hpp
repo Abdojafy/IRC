@@ -54,6 +54,8 @@ public:
 	void			invite(VecStr command, PollIter it_client);
 	void			invite_client(ClientIter it_client, channels *my_channel, ClientIter my_client_it);
 
+	//TOPIC functions
+	void			topic(VecStr command, PollIter it_client);
 	
 	std::string		set_welcome_msg(std::string hostname, ClientIter client_iter);
 

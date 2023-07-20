@@ -121,8 +121,16 @@ void	Server::join_channels(PollIter it_client, std::string name, std::string pas
 	// // insert a channel successfully
 	my_channel->client.insert(std::make_pair(it_client->fd, *my_client));
 	listChannels.insert(std::make_pair(name, my_channel));
-	message =  ":" + my_client->get_client_nick() + "!~" + my_client->get_client_username() + "@" + my_client->get_clientip() + " JOIN " + name + "\r\n" ;
-	message += ":" + my_client->get_clientip() + " MODE " + name + " +" + my_channel->get_mode() + "\r\n";
+	for(ClientIter joined = my_channel->client.begin(); joined != my_channel->client.end(); joined++)
+	{
+		message =  ":" + my_client->get_client_nick() + "!~" + my_client->get_client_username() + "@" + my_client->get_clientip() + " JOIN " + name + "\r\n" ;
+		send_message(joined->first, message);
+	}
+	
+	
+	message = ":" + my_client->get_clientip() + " MODE " + name + " +" + my_channel->get_mode() + "\r\n";
+	if (!my_channel->get_topic().empty())
+		message += ":" + my_client->get_clientip() + " 332 " + my_client->get_client_nick() + " " + name + " :" + my_channel->get_topic() + "\r\n";
 	message += ":" + my_client->get_clientip() + " 353 " + my_client->get_client_nick() + " = " + name + " :" + my_channel->get_users() + "\r\n";
 	message += ":" + my_client->get_clientip() + " 366 " + my_client->get_client_nick() + " " + name + " :End of /NAMES list." + "\r\n";
 	send_message(it_client->fd, message);
