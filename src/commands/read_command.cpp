@@ -17,5 +17,10 @@ void	Server::read_command(PollIter it_client)
 			command.erase(it);
 			// kick(command, it_client);
 		}
+		if (!strcmp((*it).c_str(), "INVITE"))
+		{
+			command.erase(it);
+			invite(command, it_client);
+		}
 	}
 }
