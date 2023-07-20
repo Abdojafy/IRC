@@ -48,6 +48,11 @@ public:
 
 	//KICK functions
 	void			kick(VecStr command, PollIter it_client);
+	
+	
+	//INVITE functions
+	void			invite(VecStr command, PollIter it_client);
+	void			invite_client(ClientIter it_client, channels *my_channel, ClientIter my_client_it);
 
 	
 	std::string		set_welcome_msg(std::string hostname, ClientIter client_iter);

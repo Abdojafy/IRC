@@ -81,16 +81,6 @@ void	channels::set_classement(size_t new_classement)
 	this->classement = new_classement;
 }
 
-bool channels::get_invited()
-{
-	return (invited);
-}
-
-void	channels::set_invited(bool new_invited)
-{
-	this->invited = new_invited;
-}
-
 std::string	channels::get_users()
 {
 	std::string users;

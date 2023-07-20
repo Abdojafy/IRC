@@ -13,13 +13,13 @@ private:
 	std::string 	password;
 	size_t			limite;
 	size_t			classement;
-	bool invited;
 public:
 	typedef std::map<int, Client>::iterator					ClientIter;
 	typedef std::map<int, Client>							ClientMap;
 
 	ClientMap client;
 	ClientMap operators;
+	ClientMap invited;
 	channels();
 	channels(std::string name);
 	channels(std::string name, std::string password, std::string mode);
@@ -35,8 +35,6 @@ public:
 	void			set_limite(size_t limite);
 	size_t			get_classement();
 	void			set_classement(size_t classement);
-	bool			get_invited();
-	void			set_invited(bool invited);
 };
 
 #endif
