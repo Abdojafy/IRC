@@ -58,10 +58,9 @@ void	Server::join_channels(PollIter it_client, std::string name, std::string pas
 		it_channel++;
 	}
 
-	//add new channel with mode (o) 
+	//add new channel  
 	if (it_channel == listChannels.end())
 	{
-		mode += "o";
 		if (!pass.empty())
 			mode += "k";
 		my_channel = new channels(name, pass, mode);
@@ -74,13 +73,16 @@ void	Server::join_channels(PollIter it_client, std::string name, std::string pas
 		return;
 
 	//check password in mode (+k)
-	if (it_channel != listChannels.end())
+	if ((my_channel->get_mode()).find("k") != std::string::npos)
 	{
-		if (strcmp(it_channel->second->get_password().c_str(), pass.c_str()))
+		if (it_channel != listChannels.end())
 		{
-			message = ":" + my_client->get_clientip() + " 475 " + my_client->get_client_nick() + " " + it_channel->second->get_name() + " :Cannot join channel (+k)\r\n";
-			send_message(it_client->fd, message);
-			return;
+			if (strcmp(it_channel->second->get_password().c_str(), pass.c_str()))
+			{
+				message = ":" + my_client->get_clientip() + " 475 " + my_client->get_client_nick() + " " + it_channel->second->get_name() + " :Cannot join channel (+k)\r\n";
+				send_message(it_client->fd, message);
+				return;
+			}
 		}
 	}
 
@@ -88,7 +90,7 @@ void	Server::join_channels(PollIter it_client, std::string name, std::string pas
 	//check limit in mode (+l)
 	if ((my_channel->get_mode()).find("l") != std::string::npos)
 	{
-		if (my_channel->client.size() > my_channel->get_limite())
+		if (my_channel->client.size() >= my_channel->get_limite())
 		{
 			message = ":" + my_client->get_clientip() + " 471 " + my_client->get_client_nick() + " " + it_channel->second->get_name() + " :Cannot join channel (+l)\r\n";
 			send_message(it_client->fd, message);
@@ -99,19 +101,35 @@ void	Server::join_channels(PollIter it_client, std::string name, std::string pas
 	//check invite-only in mode (+i)
 	if ((my_channel->get_mode()).find("i") != std::string::npos)
 	{
-		if (!my_channel->get_invited())
+		it_map_client = my_channel->invited.begin();
+		while (it_map_client != my_channel->invited.end())
+		{
+			if (it_map_client->first == it_client->fd)
+				break;
+			it_map_client++;
+		}
+		if (it_map_client == my_channel->invited.end())
 		{
 			message = ":" + my_client->get_clientip() + " 473 " + my_client->get_client_nick() + " " + it_channel->second->get_name() + " :Cannot join channel (+i)\r\n";
 			send_message(it_client->fd, message);
 			return;
 		}
+
 	}
 
 	// // insert a channel successfully
 	my_channel->client.insert(std::make_pair(it_client->fd, *my_client));
 	listChannels.insert(std::make_pair(name, my_channel));
-	message =  ":" + my_client->get_client_nick() + "!~" + my_client->get_client_username() + "@" + my_client->get_clientip() + " JOIN " + name + "\r\n" ;
-	message += ":" + my_client->get_clientip() + " MODE " + name + " +" + my_channel->get_mode() + "\r\n";
+	for(ClientIter joined = my_channel->client.begin(); joined != my_channel->client.end(); joined++)
+	{
+		message =  ":" + my_client->get_client_nick() + "!~" + my_client->get_client_username() + "@" + my_client->get_clientip() + " JOIN " + name + "\r\n" ;
+		send_message(joined->first, message);
+	}
+	message.clear();
+	if (!my_channel->get_mode().empty())
+		message = ":" + my_client->get_clientip() + " MODE " + name + " +" + my_channel->get_mode() + "\r\n";
+	if (!my_channel->get_topic().empty())
+		message += ":" + my_client->get_clientip() + " 332 " + my_client->get_client_nick() + " " + name + " :" + my_channel->get_topic() + "\r\n";
 	message += ":" + my_client->get_clientip() + " 353 " + my_client->get_client_nick() + " = " + name + " :" + my_channel->get_users() + "\r\n";
 	message += ":" + my_client->get_clientip() + " 366 " + my_client->get_client_nick() + " " + name + " :End of /NAMES list." + "\r\n";
 	send_message(it_client->fd, message);

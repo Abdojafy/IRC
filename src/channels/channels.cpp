@@ -41,7 +41,18 @@ void	channels::set_name(std::string &new_name)
 	this->name = new_name;
 }
 
-std::string channels::get_mode()
+std::string channels::get_topic()
+{
+	return (topic);
+}
+
+
+void	channels::set_topic(std::string &new_topic)
+{
+	this->topic = new_topic;
+}
+
+std::string& channels::get_mode()
 {
 	return (mode);
 }
@@ -49,6 +60,11 @@ std::string channels::get_mode()
 void	channels::set_mode(std::string &new_mode)
 {
 	this->mode = new_mode;
+}
+
+void	channels::join_mode(std::string new_mode)
+{
+	this->mode += new_mode;
 }
 
 std::string channels::get_password()
@@ -81,16 +97,6 @@ void	channels::set_classement(size_t new_classement)
 	this->classement = new_classement;
 }
 
-bool channels::get_invited()
-{
-	return (invited);
-}
-
-void	channels::set_invited(bool new_invited)
-{
-	this->invited = new_invited;
-}
-
 std::string	channels::get_users()
 {
 	std::string users;
@@ -103,11 +109,11 @@ std::string	channels::get_users()
 		{
 			if (it->first == oper->first)
 			{
-				// //space between two operators
-				// if (!oper_name.empty())	
-				// {
-				// 	oper_name += " ";
-				// }
+				//space between two operators
+				if (!oper_name.empty())	
+				{
+					oper_name += " ";
+				}
 				oper_name += "@";
 				oper_name += it->second.get_client_nick();
 				is_oper = true;
