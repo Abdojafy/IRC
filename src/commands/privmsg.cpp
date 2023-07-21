@@ -10,6 +10,7 @@ void	Server::privmsg(ClientIter client_iter, std::string remind, std::string com
 	channels			channel;
 	ClientIter			client_it;
 	bool				is_nickname = false;
+	
 
 	ss << remind;
 	std::getline(ss, name, ' ');
@@ -28,16 +29,17 @@ void	Server::privmsg(ClientIter client_iter, std::string remind, std::string com
 				break;
 			}
 		}
-		if (is_nickname){
-			send_message(client_it->first, ":" + client_iter->second.get_client_nick() + " " + command + " " + client_it->second.get_client_nick() + " :" + msg + "\r\n");
+		if(msg[0] != ':')
+			msg = ":" + msg;
+		if (is_nickname && fd != client_it->first){
+			std::string str = ":" + client_iter->second.get_client_nick() + "!~" + client_iter->second.get_client_username()+ "@" + client_iter->second.get_clientip() + " " + command + " " + client_it->second.get_client_nick() + " " + msg + "\r\n";
+			send_message(client_it->first, str);
 		}
-		else{
+		else if (!is_nickname){
 			for (ClientIter it = channels_iter->second->client.begin(); it != channels_iter->second->client.end(); it++)
 			{
-				if (it->first != fd){
-					
-					send_message(it->first , ":" + client_iter->second.get_client_nick() + "!~" + client_iter->second.get_client_username()+ "@" + client_iter->second.get_clientip() + " " + command + " " + remind + "\r\n");
-				}
+				if (it->first != fd)
+					send_message(it->first , ":" + client_iter->second.get_client_nick() + "!~" + client_iter->second.get_client_username()+ "@" + client_iter->second.get_clientip() + " " + command + " " + client_it->second.get_client_nick() + " " + msg + "\r\n");
 			}
 		}
 	}

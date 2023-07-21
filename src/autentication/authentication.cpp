@@ -17,12 +17,13 @@ std::string Server::set_welcome_msg(std::string hostname, ClientIter client_iter
 
 void Server::client_isregistred(ClientIter client_iter, std::string hostname, int fd){
 	std::string			welcome_msg;
+
 	if (client_iter->second.get_isvalid() == 3 && !client_iter->second.get_registred()){
-		nick_names.push_back(nick);
-		client_iter->second.set_registred();
-		client_iter->second.set_client_data(username, realname, pass, nick);
-		welcome_msg = set_welcome_msg(hostname, client_iter);
-		send_message(fd, welcome_msg);
+			nick_names.push_back(nick);
+			client_iter->second.set_registred();
+			client_iter->second.set_client_data(username, realname, pass, nick);
+			welcome_msg = set_welcome_msg(hostname, client_iter);
+			send_message(fd, welcome_msg);
 	}
 }
 

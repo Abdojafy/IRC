@@ -23,6 +23,8 @@ public:
 	typedef std::vector<std::string>						VecStr;
 	typedef std::vector<std::string>::iterator				VecIter;
 	//Channels
+	typedef std::map<int, std::string>						UnregistredMap;
+	typedef std::map<int , std::string>::iterator			UnregistredIter;
 	typedef std::map<std::string, channels *>				mapChannels;
 	typedef std::map<std::string, channels *>::iterator		channelsIter;
 
@@ -81,6 +83,7 @@ public:
 private:
 	//socket hia fd
 	int			server_socket;
+	UnregistredMap		un_names;
 	int			client_socket;
 	int			poll_result;
 	int			port;
@@ -93,11 +96,12 @@ private:
 	sockaddr_in addr_client;
 
 	//authentication variables
-	VecStr		nick_names;
-	std::string	realname;
-	std::string	username;
-	std::string	nick;
-	std::string	pass;
+	VecStr			nick_names;
+	UnregistredMap 	unregistred_nicks;
+	std::string		realname;
+	std::string		username;
+	std::string		nick;
+	std::string		pass;
 
 	//JOIN variables
 	mapChannels listChannels;
