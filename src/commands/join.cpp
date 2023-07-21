@@ -58,10 +58,9 @@ void	Server::join_channels(PollIter it_client, std::string name, std::string pas
 		it_channel++;
 	}
 
-	//add new channel with mode (o) 
+	//add new channel  
 	if (it_channel == listChannels.end())
 	{
-		mode += "o";
 		if (!pass.empty())
 			mode += "k";
 		my_channel = new channels(name, pass, mode);
@@ -91,7 +90,7 @@ void	Server::join_channels(PollIter it_client, std::string name, std::string pas
 	//check limit in mode (+l)
 	if ((my_channel->get_mode()).find("l") != std::string::npos)
 	{
-		if (my_channel->client.size() > my_channel->get_limite())
+		if (my_channel->client.size() >= my_channel->get_limite())
 		{
 			message = ":" + my_client->get_clientip() + " 471 " + my_client->get_client_nick() + " " + it_channel->second->get_name() + " :Cannot join channel (+l)\r\n";
 			send_message(it_client->fd, message);
@@ -126,9 +125,9 @@ void	Server::join_channels(PollIter it_client, std::string name, std::string pas
 		message =  ":" + my_client->get_client_nick() + "!~" + my_client->get_client_username() + "@" + my_client->get_clientip() + " JOIN " + name + "\r\n" ;
 		send_message(joined->first, message);
 	}
-	
-	
-	message = ":" + my_client->get_clientip() + " MODE " + name + " +" + my_channel->get_mode() + "\r\n";
+	message.clear();
+	if (!my_channel->get_mode().empty())
+		message = ":" + my_client->get_clientip() + " MODE " + name + " +" + my_channel->get_mode() + "\r\n";
 	if (!my_channel->get_topic().empty())
 		message += ":" + my_client->get_clientip() + " 332 " + my_client->get_client_nick() + " " + name + " :" + my_channel->get_topic() + "\r\n";
 	message += ":" + my_client->get_clientip() + " 353 " + my_client->get_client_nick() + " = " + name + " :" + my_channel->get_users() + "\r\n";

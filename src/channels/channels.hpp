@@ -29,8 +29,9 @@ public:
 	void			set_name(std::string &new_name);
 	std::string 	get_topic();
 	void			set_topic(std::string &new_topic);
-	std::string 	get_mode();
+	std::string& 	get_mode();
 	void			set_mode(std::string &new_mode);
+	void			join_mode(std::string new_mode);
 	std::string 	get_password();
 	void			set_password(std::string &new_password);
 	std::string		get_users();
