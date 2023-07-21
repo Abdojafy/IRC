@@ -60,10 +60,10 @@ public:
 	//MODE functions
 	void			modes(VecStr command, PollIter it_client);
 	void			o_mode(bool take, channelsIter my_channel, ClientIter client_it, ClientIter my_client);
-	void			i_mode(bool take, channelsIter my_channel, ClientIter client_it, ClientIter my_client);
+	void			i_mode(bool take, channelsIter my_channel, ClientIter my_client);
+	void			t_mode(bool take, channelsIter my_channel, ClientIter my_client);
 	void			l_mode(bool take, channelsIter my_channel, ClientIter my_client, std::string flag);
-	void			k_mode(bool take, channelsIter my_channel, ClientIter client_it, ClientIter my_client);
-	void			t_mode(bool take, channelsIter my_channel, ClientIter client_it, ClientIter my_client);
+	void			k_mode(bool take, channelsIter my_channel, ClientIter my_client, std::string flag);
 
 	
 	std::string		set_welcome_msg(std::string hostname, ClientIter client_iter);

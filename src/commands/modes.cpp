@@ -30,16 +30,67 @@ void	Server::o_mode(bool take, channelsIter my_channel, ClientIter client_it, Cl
 	}
 }
 
-// void	Server::i_mode(bool take, channelsIter my_channel, ClientIter client_it, ClientIter my_client)
-// {
+void	Server::i_mode(bool take, channelsIter my_channel, ClientIter my_client)
+{
+	std::string message;
 
-// }
+	if (my_channel->second->get_mode().find("i") == std::string::npos)
+	{
+		if (take)
+		{
+			my_channel->second->join_mode("i");
+			//:mine!~t@197.230.30.146 MODE #abdoo +i
+			message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " +i " + "\r\n" ;
+			send_message(my_client->first, message);
+			return;
+		}
+	}
+	else
+	{
+		if (!take)
+		{
+			(my_channel->second->get_mode()).erase(my_channel->second->get_mode().find("i"), 1);
+			//:mine!~t@197.230.30.146 MODE #abdoo -i
+			message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " -i" + "\r\n" ;
+			send_message(my_client->first, message);
+			return;
+		}	
+	}
+}
+
+void	Server::t_mode(bool take, channelsIter my_channel, ClientIter my_client)
+{
+	std::string message;
+
+	if (my_channel->second->get_mode().find("t") == std::string::npos)
+	{
+		if (take)
+		{
+			my_channel->second->join_mode("t");
+			//:mine!~t@197.230.30.146 MODE #abdoo +t
+			message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " +t " + "\r\n" ;
+			send_message(my_client->first, message);
+			return;
+		}
+	}
+	else
+	{
+		if (!take)
+		{
+			(my_channel->second->get_mode()).erase(my_channel->second->get_mode().find("t"), 1);
+			//:mine!~t@197.230.30.146 MODE #abdoo -t
+			message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " -t" + "\r\n" ;
+			send_message(my_client->first, message);
+			return;
+		}	
+	}
+}
 
 void	Server::l_mode(bool take, channelsIter my_channel, ClientIter my_client, std::string flag)
 {
 	std::string message;
 	size_t lim = std::atoi(flag.c_str());
-	//ClientIter my_client = clients_map.find(client_it->first);
+
 	if (my_channel->second->get_mode().find("l") == std::string::npos)
 	{
 		if (take && (lim > 0 || flag == "0"))
@@ -73,15 +124,43 @@ void	Server::l_mode(bool take, channelsIter my_channel, ClientIter my_client, st
 	}
 }
 
-// void	Server::k_mode(bool take, channelsIter my_channel, ClientIter client_it, ClientIter my_client)
-// {
+void	Server::k_mode(bool take, channelsIter my_channel, ClientIter my_client, std::string flag)
+{
+	std::string message;
+	if (my_channel->second->get_mode().find("k") == std::string::npos)
+	{
+		if (take)
+		{
+			my_channel->second->join_mode("k");
+			my_channel->second->set_password(flag);
+			//:mine!~t@197.230.30.146 MODE #abdoo +k key
+			message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " +k " + flag + "\r\n" ;
+			send_message(my_client->first, message);
+			return;
+		}
+	}
+	else
+	{
+		if (take)
+		{
+			my_channel->second->set_password(flag);
+			//:mine!~t@197.230.30.146 MODE #abdoo +k key
+			message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " +k " + flag + "\r\n" ;
+			send_message(my_client->first, message);
+			return;
+		}
+		if (!take)
+		{
+			(my_channel->second->get_mode()).erase(my_channel->second->get_mode().find("k"), 1);
+			//:mine!~t@197.230.30.146 MODE #abdoo -k
+			message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " -k" + "\r\n" ;
+			send_message(my_client->first, message);
+			return;
+		}	
+	}
+}
 
-// }
 
-// void	Server::t_mode(bool take, channelsIter my_channel, ClientIter client_it, ClientIter my_client)
-// {
-
-// }
 
 
 void	Server::modes(VecStr command, PollIter it_client)
@@ -152,8 +231,8 @@ void	Server::modes(VecStr command, PollIter it_client)
 				}
 				o_mode(take, my_channel, client_it, my_client_it);
 			}
-			// else if (mode == "i")
-			// 	i_mode(take, my_channel, client_it, my_client_it);
+			else if (mode == "i")
+				i_mode(take, my_channel, my_client_it);
 			else if (mode == "l")
 			{
 				if (take && command.size() != 3)
@@ -164,10 +243,18 @@ void	Server::modes(VecStr command, PollIter it_client)
 				}
 				l_mode(take, my_channel, my_client_it, flag);
 			}
-			// else if (mode == "k")
-			// 	k_mode(take, my_channel, client_it, my_client_it);
-			// else if (mode == "t")
-			// 	t_mode(take, my_channel, client_it, my_client_it);
+			else if (mode == "k")
+			{
+				if (take && command.size() != 3)
+				{
+					message = ":" + my_client_it->second.get_clientip() + " 461 " + my_client_it->second.get_client_nick() + " MODE :Not enough parameters\r\n";
+					send_message(it_client->fd, message);
+					return;
+				}
+				k_mode(take, my_channel, my_client_it, flag);
+			}
+			else if (mode == "t")
+				t_mode(take, my_channel, my_client_it);
 			else
 			{
 				//error

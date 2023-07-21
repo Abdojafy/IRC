@@ -31,7 +31,7 @@ void	Server::topic(VecStr command, PollIter it_client)
 		{
 			new_topic = *it;
 			ClientIter client_operator = my_channel->second->operators.find(it_client->fd);
-			if (client_operator == my_channel->second->operators.end())
+			if (client_operator == my_channel->second->operators.end() && my_channel->second->get_mode().find("t") != std::string::npos)
 			{
 				//:zinc.libera.chat 482 youssef #general :You're not a channel operator
 				message = ":" + my_client_it->second.get_clientip() + " 482 " + my_client_it->second.get_client_nick() + " " + channel + " :You're not a channel operator\r\n";
