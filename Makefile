@@ -6,7 +6,7 @@ HEADERS = $(wildcard inc/*.hpp) $(wildcard src/**/*.hpp) $(wildcard src/server/*
 
 INC = inc/
 
-C++ = c++
+C++ = c++ -g
 
 CPP_FLAGS = -I$(INC)
 

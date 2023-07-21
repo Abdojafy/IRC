@@ -134,7 +134,7 @@ void Server::read_client_data(PollIter it){
 		if (this_client->second.get_registred())
 			read_command(it);
 		std::cout << "Received from client : " << client_msg << std::endl;
-		send(it->fd, "Message received\n", 17, 0);
+		// send(it->fd, "Message received\n", 17, 0);
 		client_msg.clear();
 	}
 }
