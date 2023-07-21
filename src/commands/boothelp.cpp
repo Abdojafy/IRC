@@ -1,36 +1,35 @@
 #include "../server/server.hpp"
 
-std::string Server::help_msg(std::string hostname){
+std::string Server::help_msg(ClientIter client_iter){
 	std::string str;
-	(void) hostname;
-	str = ":Usage Available Commands :[join] [privmsg] [notice] [kick]\r\n";
-	str += ":Usage Available Commands :[user] [topic] [nick] [pass]\r\n";
-	str += ":_____ ___ ___ :___\r\n";
-	str += ":How to use :help + above commands\r\n";
-	str += ":_____ ___ ___ :___\r\n";
-	str += ":Example Command help :join\r\n";
+	str = ":BOT PRIVMSG " + client_iter->second.get_client_nick() + " :Availabel Commands :  [join] [privmsg] [notice] [kick]\r\n";
+	str += ":BOT PRIVMSG " + client_iter->second.get_client_nick() + " :                      [user]  [topic]   [nick]  [pass]\r\n";
+	str += ":BOT PRIVMSG " + client_iter->second.get_client_nick() + " :How to use         :  help + one of the above commands\r\n";
+	str += ":BOT PRIVMSG " + client_iter->second.get_client_nick() + " :Example            :  help join\r\n";
 	return (str);
 }
 
-void Server::boot_help(std::string hostname, int fd){
-	std::string msg = help_msg(hostname);
+void Server::boot_help(ClientIter client_iter, std::string remind, std::string command, int fd){
+	std::string msg = help_msg(client_iter);
 
-	if (!client_msg.compare("help"))
+	if (!remind.compare(""))
+		std::cout<<"hello"<<std::endl;
+	if (!command.compare("HELP") && !remind.compare(""))
 		send_message(fd, msg);
-	else if (!client_msg.compare("help privmsg"))
-		send_message(fd, "300 * :Allows you to send message to a client or a channel\r\n:Syntax:\r\n:privmsg + Client nickname(receiver nick name) or channel + Message\r\n");
-	else if (!client_msg.compare("help notice"))
-		send_message(fd, ":Allows you to notice a client or a channel\r\n:Syntax:\r\n:notice + Client nickname(receiver nick name) or channel + Message\r\n");
-	else if (!client_msg.compare("help kick"))
-		send_message(fd, ":Allows you to if you are Admin to kick someone of channel\r\n:Syntax:\r\n:kick + channel name (add # before the channel's name) + nick name(of the client that you want to kick)\r\n");
-	else if (!client_msg.compare("help join"))
-		send_message(fd, ":Allows you to join a channel or creat it if it doesn't exist\r\n:Syntax:\r\n:join + channel name (add # before the channel's name) + password (if you want to set a password to it) or (if you want to join private channel)\r\n");
-	else if (!client_msg.compare("help nick"))
-		send_message(fd, ":Allows you to set your nick name \r\n:Syntax:\r\n:nick + your nick name\r\n");
-	else if (!client_msg.compare("help user"))
-		send_message(fd, ":Allows you to set your user name \r\n:Syntax:\r\n:user + (it needs four argument the most important ones are the first and the last)\r\n");
-	else if (!client_msg.compare("help pass"))
-		send_message(fd, ":Allows you to access to the server \r\n:Syntax:\r\n:pass + password(that setted by the server)\r\n");
-	else if (!client_msg.compare("help topic"))
-		send_message(fd, ":Allows you to change discreption of channel\r\n:Syntax:\r\n:topic +  #channel name + new topic");
+	else if (!command.compare("HELP") && !remind.compare("privmsg"))
+		send_message(fd, ":BOT PRIVMSG " + client_iter->second.get_client_nick() + " :Allows you to send private msg to a client or channel Syntax = (privmsg + name + msg)\r\n");
+	else if (!command.compare("HELP") && !remind.compare("notice"))
+		send_message(fd, ":BOT PRIVMSG " + client_iter->second.get_client_nick() + " :Allows you to notice a client or a channel Syntax = (notice + name + msg)\r\n");
+	else if (!command.compare("HELP") && !remind.compare("kick"))
+		send_message(fd, ":BOT PRIVMSG " + client_iter->second.get_client_nick() + " :Allows you to if you are Admin to kick someone from channel Syntax = (kick + #channelName  + nickName)\r\n");
+	else if (!command.compare("HELP") && !remind.compare("join"))
+		send_message(fd, ":BOT PRIVMSG " + client_iter->second.get_client_nick() + " :Allows you to join a channel or creat it if it doesn't exist Syntax = (join + #channelName)\r\n");
+	else if (!command.compare("HELP") && !remind.compare("nick"))
+		send_message(fd, ":BOT PRIVMSG " + client_iter->second.get_client_nick() + " :Allows you to set your nick name Syntax = (nick + nickName)\r\n");
+	else if (!command.compare("HELP") && !remind.compare("user"))
+		send_message(fd, ":BOT PRIVMSG " + client_iter->second.get_client_nick() + " :Allows you to set your user name Syntax = (user + username one two realname\r\n");
+	else if (!command.compare("HELP") && !remind.compare("pass"))
+		send_message(fd, ":BOT PRIVMSG " + client_iter->second.get_client_nick() + " :Allows you to access to the server Syntax = (pass + password(that setted by the server)\r\n");
+	else if (!command.compare("HELP") && !remind.compare("topic"))
+		send_message(fd, ":BOT PRIVMSG " + client_iter->second.get_client_nick() + " :Allows you to change discreption of channel Syntax = (topic +  #channelName + new topic");
 }

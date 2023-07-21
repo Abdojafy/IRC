@@ -63,7 +63,7 @@ int Server::exec_command(int fd)
 	else if (!command.compare("KICK"))
 		kick(client_iter, remind, command, fd, hostname);
 	else if (!command.compare("HELP"))
-		boot_help(hostname, fd);
+		boot_help(client_iter, remind, command, fd);
 	
 	return 0;
 }
