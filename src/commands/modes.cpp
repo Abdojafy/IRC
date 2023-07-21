@@ -11,9 +11,12 @@ void	Server::o_mode(bool take, channelsIter my_channel, ClientIter client_it, Cl
 		if (take)
 		{
 			my_channel->second->operators.insert(std::make_pair(client_it->first, client_it->second));
-			//:mine!~t@197.230.30.146 MODE #abdoo +o mine
-			message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " +o " + client_it->second.get_client_nick() + "\r\n" ;
-			send_message(my_client->first, message);
+			for(ClientIter joined = my_channel->second->client.begin(); joined != my_channel->second->client.end(); joined++)
+			{
+				//:mine!~t@197.230.30.146 MODE #abdoo +o mine
+				message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " +o " + client_it->second.get_client_nick() + "\r\n" ;
+				send_message(joined->first, message);
+			}
 			return;
 		}
 	}
@@ -22,9 +25,12 @@ void	Server::o_mode(bool take, channelsIter my_channel, ClientIter client_it, Cl
 		if (!take && my_channel->second->operators.size() > 1)
 		{
 			my_channel->second->operators.erase(client_it->first);
-			//:mine!~t@197.230.30.146 MODE #abdoo -o mine
-			message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " -o " + client_it->second.get_client_nick() + "\r\n" ;
-			send_message(my_client->first, message);
+			for(ClientIter joined = my_channel->second->client.begin(); joined != my_channel->second->client.end(); joined++)
+			{
+				//:mine!~t@197.230.30.146 MODE #abdoo -o mine
+				message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " -o " + client_it->second.get_client_nick() + "\r\n" ;
+				send_message(joined->first, message);
+			}
 			return;
 		}	
 	}
@@ -39,9 +45,12 @@ void	Server::i_mode(bool take, channelsIter my_channel, ClientIter my_client)
 		if (take)
 		{
 			my_channel->second->join_mode("i");
-			//:mine!~t@197.230.30.146 MODE #abdoo +i
-			message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " +i " + "\r\n" ;
-			send_message(my_client->first, message);
+			for(ClientIter joined = my_channel->second->client.begin(); joined != my_channel->second->client.end(); joined++)
+			{
+				//:mine!~t@197.230.30.146 MODE #abdoo +i
+				message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " +i " + "\r\n" ;
+				send_message(joined->first, message);
+			}
 			return;
 		}
 	}
@@ -50,9 +59,12 @@ void	Server::i_mode(bool take, channelsIter my_channel, ClientIter my_client)
 		if (!take)
 		{
 			(my_channel->second->get_mode()).erase(my_channel->second->get_mode().find("i"), 1);
-			//:mine!~t@197.230.30.146 MODE #abdoo -i
-			message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " -i" + "\r\n" ;
-			send_message(my_client->first, message);
+			for(ClientIter joined = my_channel->second->client.begin(); joined != my_channel->second->client.end(); joined++)
+			{
+				//:mine!~t@197.230.30.146 MODE #abdoo -i
+				message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " -i" + "\r\n" ;
+				send_message(joined->first, message);
+			}
 			return;
 		}	
 	}
@@ -67,9 +79,12 @@ void	Server::t_mode(bool take, channelsIter my_channel, ClientIter my_client)
 		if (take)
 		{
 			my_channel->second->join_mode("t");
-			//:mine!~t@197.230.30.146 MODE #abdoo +t
-			message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " +t " + "\r\n" ;
-			send_message(my_client->first, message);
+			for(ClientIter joined = my_channel->second->client.begin(); joined != my_channel->second->client.end(); joined++)
+			{
+				//:mine!~t@197.230.30.146 MODE #abdoo +t
+				message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " +t " + "\r\n" ;
+				send_message(joined->first, message);
+			}
 			return;
 		}
 	}
@@ -78,9 +93,12 @@ void	Server::t_mode(bool take, channelsIter my_channel, ClientIter my_client)
 		if (!take)
 		{
 			(my_channel->second->get_mode()).erase(my_channel->second->get_mode().find("t"), 1);
-			//:mine!~t@197.230.30.146 MODE #abdoo -t
-			message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " -t" + "\r\n" ;
-			send_message(my_client->first, message);
+			for(ClientIter joined = my_channel->second->client.begin(); joined != my_channel->second->client.end(); joined++)
+			{
+				//:mine!~t@197.230.30.146 MODE #abdoo -t
+				message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " -t" + "\r\n" ;
+				send_message(joined->first, message);
+			}
 			return;
 		}	
 	}
@@ -97,9 +115,12 @@ void	Server::l_mode(bool take, channelsIter my_channel, ClientIter my_client, st
 		{
 			my_channel->second->join_mode("l");
 			my_channel->second->set_limite(lim);
-			//:mine!~t@197.230.30.146 MODE #abdoo +l limite
-			message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " +l " + flag + "\r\n" ;
-			send_message(my_client->first, message);
+			for(ClientIter joined = my_channel->second->client.begin(); joined != my_channel->second->client.end(); joined++)
+			{
+				//:mine!~t@197.230.30.146 MODE #abdoo +l limite
+				message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " +l " + flag + "\r\n" ;
+				send_message(joined->first, message);
+			}
 			return;
 		}
 	}
@@ -108,17 +129,23 @@ void	Server::l_mode(bool take, channelsIter my_channel, ClientIter my_client, st
 		if (take && (lim > 0 || flag == "0"))
 		{
 			my_channel->second->set_limite(lim);
-			//:mine!~t@197.230.30.146 MODE #abdoo +l limite
-			message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " +l " + flag + "\r\n" ;
-			send_message(my_client->first, message);
+			for(ClientIter joined = my_channel->second->client.begin(); joined != my_channel->second->client.end(); joined++)
+			{
+				//:mine!~t@197.230.30.146 MODE #abdoo +l limite
+				message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " +l " + flag + "\r\n" ;
+				send_message(joined->first, message);
+			}
 			return;
 		}
 		if (!take)
 		{
 			(my_channel->second->get_mode()).erase(my_channel->second->get_mode().find("l"), 1);
-			//:mine!~t@197.230.30.146 MODE #abdoo -l
-			message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " -l" + "\r\n" ;
-			send_message(my_client->first, message);
+			for(ClientIter joined = my_channel->second->client.begin(); joined != my_channel->second->client.end(); joined++)
+			{
+				//:mine!~t@197.230.30.146 MODE #abdoo -l
+				message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " -l" + "\r\n" ;
+				send_message(joined->first, message);
+			}
 			return;
 		}	
 	}
@@ -133,9 +160,12 @@ void	Server::k_mode(bool take, channelsIter my_channel, ClientIter my_client, st
 		{
 			my_channel->second->join_mode("k");
 			my_channel->second->set_password(flag);
-			//:mine!~t@197.230.30.146 MODE #abdoo +k key
-			message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " +k " + flag + "\r\n" ;
-			send_message(my_client->first, message);
+			for(ClientIter joined = my_channel->second->client.begin(); joined != my_channel->second->client.end(); joined++)
+			{
+				//:mine!~t@197.230.30.146 MODE #abdoo +k key
+				message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " +k " + flag + "\r\n" ;
+				send_message(joined->first, message);
+			}
 			return;
 		}
 	}
@@ -144,23 +174,27 @@ void	Server::k_mode(bool take, channelsIter my_channel, ClientIter my_client, st
 		if (take)
 		{
 			my_channel->second->set_password(flag);
-			//:mine!~t@197.230.30.146 MODE #abdoo +k key
-			message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " +k " + flag + "\r\n" ;
-			send_message(my_client->first, message);
+			for(ClientIter joined = my_channel->second->client.begin(); joined != my_channel->second->client.end(); joined++)
+			{
+				//:mine!~t@197.230.30.146 MODE #abdoo +k key
+				message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " +k " + flag + "\r\n" ;
+				send_message(joined->first, message);
+			}
 			return;
 		}
 		if (!take)
 		{
 			(my_channel->second->get_mode()).erase(my_channel->second->get_mode().find("k"), 1);
-			//:mine!~t@197.230.30.146 MODE #abdoo -k
-			message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " -k" + "\r\n" ;
-			send_message(my_client->first, message);
+			for(ClientIter joined = my_channel->second->client.begin(); joined != my_channel->second->client.end(); joined++)
+			{
+				//:mine!~t@197.230.30.146 MODE #abdoo -k
+				message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " -k" + "\r\n" ;
+				send_message(joined->first, message);
+			}
 			return;
 		}	
 	}
 }
-
-
 
 
 void	Server::modes(VecStr command, PollIter it_client)
