@@ -12,8 +12,6 @@ std::string Server::help_msg(ClientIter client_iter){
 void Server::boot_help(ClientIter client_iter, std::string remind, std::string command, int fd){
 	std::string msg = help_msg(client_iter);
 
-	if (!remind.compare(""))
-		std::cout<<"hello"<<std::endl;
 	if (!command.compare("HELP") && !remind.compare(""))
 		send_message(fd, msg);
 	else if (!command.compare("HELP") && !remind.compare("privmsg"))

@@ -48,23 +48,13 @@ int Server::exec_command(int fd)
 	ft_upper(command);
 	std::getline (ss, remind, '\0');
 	remind = trim_spaces(remind);
-	if (!client_msg.compare("QUIT :"))
-		remove_client(fd);
-	if (!command.compare("NICK"))
+	 if (!command.compare("NICK"))
 		check_nickname(client_iter, remind, command, hostname, fd);
 	else if (!command.compare("PASS"))
 		check_pass(client_iter, remind, hostname, fd, command);
 	else if (!command.compare("USER"))
 		check_user(client_iter, remind, hostname, fd, command);
 	client_isregistred(client_iter, hostname, fd);
-	if (!command.compare("PRIVMSG"))
-		privmsg(client_iter, remind, command, fd);
-	else if (!command.compare("NOTICE"))
-		notice(client_iter, remind, command, fd);
-	else if (!command.compare("KICK"))
-		kick(client_iter, remind, command, fd, hostname);
-	else if (!command.compare("HELP"))
-		boot_help(client_iter, remind, command, fd);
 	
 	return 0;
 }

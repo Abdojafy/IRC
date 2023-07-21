@@ -51,7 +51,7 @@ public:
 	void			join_channels(PollIter it_client, std::string name, std::string pass);
 
 	//KICK functions
-	void			kick(VecStr command, PollIter it_client);
+	void			kick(ClientIter client_iter, std::string remind, std::string command, int fd, std::string hostname);
 	
 	
 	//INVITE functions
@@ -77,7 +77,6 @@ public:
 	void			check_user(ClientIter client_iter, std::string remind, std::string hostname, int fd, std::string command);
 	void			privmsg(ClientIter client_iter, std::string remind, std::string command, int fd);
 	void			notice(ClientIter client_iter, std::string remind, std::string command, int fd);
-	void			kick(ClientIter client_iter, std::string remind, std::string command, int fd, std::string hostname);
 	void			boot_help(ClientIter client_iter, std::string remind, std::string command, int fd);
 
 private:
