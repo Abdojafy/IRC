@@ -12,6 +12,7 @@ void	Server::check_user(ClientIter client_iter, std::string remind, std::string 
 	else
 	{
 		username = *remindvec.begin();
+		client_iter->second.set_client_user(username);
 		realname = *(remindvec.end() -1);
 		client_iter->second.increment_isvalid(command);
 	}

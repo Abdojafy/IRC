@@ -2,26 +2,17 @@
 
 void	Server::ctlc_kick(ClientIter cit, channelsIter channels_iter){
 
-	if (channels_iter->second->client.size() == 1)
-	{
+	if (channels_iter->second->client.size() >= 1)
 		channels_iter->second->client.erase(cit);
-	}
-	else if (channels_iter->second->operators.size() == 1)
-	{
-		channels_iter->second->client.erase(cit);
+	if (channels_iter->second->operators.size() == 1 && channels_iter->second->client.size() >= 1)
 		channels_iter->second->operators.insert(std::make_pair(channels_iter->second->client.begin()->first, channels_iter->second->client.begin()->second));
-	}
-	else
-		channels_iter->second->client.erase(cit);
-	
 	ClientIter op_it = channels_iter->second->operators.find(cit->first);
 	if(op_it != channels_iter->second->operators.end())
 		channels_iter->second->operators.erase(op_it);
 	op_it = channels_iter->second->invited.find(cit->first);
 	if(op_it != channels_iter->second->invited.end())
 		channels_iter->second->invited.erase(op_it);
-	if (channels_iter->second->client.size() == 0)
-		listChannels.erase(channels_iter);
+	
 }
 
 void	Server::kick(ClientIter client_iter, std::string remind, std::string command, int fd, std::string hostname)
@@ -80,6 +71,7 @@ void	Server::kick(ClientIter client_iter, std::string remind, std::string comman
 					send_message(it->first, ":" + client_iter->second.get_client_nick() + "!~" + client_iter->second.get_client_username()+ "@" + client_iter->second.get_clientip() + " " + command + " :" + remind + "\n\r");
 			if (channels_iter->second->client.size() == 0)
 				listChannels.erase(channels_iter);
+				delete channels_iter->second;
 			}
 			else
 				send_message(fd, ":" + hostname + " 482 " + client_iter->second.get_client_nick() + " " + channelname + " :They aren't on that channel\r\n");

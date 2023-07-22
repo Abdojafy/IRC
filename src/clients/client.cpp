@@ -69,16 +69,18 @@ void	Client::set_clientip(std::string ip){
 	this->clientip = ip;
 }
 
-void Client::set_client_data(std::string username, std::string realname, std::string pass, std::string nick)
+void Client::set_client_data(std::string realname, std::string pass)
 {
-	this->username = username;
 	this->realname = realname;
 	this->pass = pass;
-	this->nick = nick;
 }
 
 void Client::set_client_nick(std::string nick){
 	this->nick = nick;
+}
+
+void Client::set_client_user(std::string user){
+	this->username = user;
 }
 
 Client &Client::operator=(const Client &other)
@@ -92,7 +94,7 @@ Client &Client::operator=(const Client &other)
 	client_socket = other.client_socket;
 	address.sin_addr = other.address.sin_addr;
 	address.sin_family = other.address.sin_family;
-	// address.sin_len = other.address.sin_len;
+	address.sin_len = other.address.sin_len;
 	address.sin_port = other.address.sin_port;
 	while(address.sin_zero[i]){
 		address.sin_zero[i] = other.address.sin_zero[i];
