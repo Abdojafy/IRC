@@ -66,9 +66,7 @@ void	Server:: read_command(PollIter it_client)
 		else if (!strcmp((*it).c_str(), "NOTICE"))
 			notice(client_iter, remind, *it, it_client->fd);
 		else if (!strcmp((*it).c_str(), "HELP"))
-		{
 			boot_help(client_iter, remind, *it, it_client->fd);
-		}
 		// else
 		// {
 		// 	message = ":" + my_client->second.get_clientip() + " 421 " + my_client->second.get_client_nick() + " " + unk_command + " :Unknown command\r\n"; 

@@ -98,16 +98,22 @@ void Server::accept_new_client()
 void Server::remove_client(int fd)
 {
 	ClientIter client_iter;
-	VecIter		vec_iter;
+	VecIter		nick_iter;
+	UnregistredIter un_iter;
 
 	printf("Client disconnected\n");
 	if (clients_map.size() > 0){
 		client_iter = clients_map.find(fd);
 		clients_map.erase(client_iter);
 	}
-	vec_iter = std::find(nick_names.begin(), nick_names.end(), nick);
-	if (vec_iter != nick_names.end())
-		nick_names.erase(vec_iter);
+	
+    un_iter = un_names.find(fd);
+    if (un_iter != un_names.end())
+        un_names.erase(un_iter);
+	nick_iter = std::find(nick_names.begin(), nick_names.end(), un_iter->second);
+	if (nick_iter != nick_names.end())
+		nick_names.erase(nick_iter);
+
 	for (PollIter pit = poll_fds.begin(); pit < poll_fds.end(); pit++){
 		if(fd == pit->fd){
 			poll_fds.erase(pit);
@@ -164,6 +170,14 @@ Server::Server(char **av)
 				poll_result--;
 			}
 		}
+		for (ClientIter it = clients_map.begin(); it != clients_map.end(); it++){
+            std::cout<<"im client = "<<it->second.get_client_nick()<<" with fd = "<<it->first<<" ip = "<<it->second.get_clientip()<<" and im "<<it->second.get_registred()<<" client size = "<<clients_map.size()<<std::endl;
+        }
+        for (UnregistredIter it = un_names.begin(); it != un_names.end(); it++){
+            std::cout<<"nick = "<<it->second<<" un_names size = "<<un_names.size()<<std::endl;
+        }
+		for (VecIter it = nick_names.begin(); it != nick_names.end(); it++)
+			std::cout<<"registred nick = "<<*it<<" size = "<<nick_names.size()<<std::endl;
 	}
 	close(server_socket);
 }

@@ -7,7 +7,6 @@ void	Server::check_nickname(ClientIter client_iter, std::string remind, std::str
 	VecIter				nick_iter;
 	std::string 		seminick;
 	std::string			oldnick;
-	
 	UnregistredIter		un_iter;
 	int					flag = 0;
 
@@ -21,8 +20,10 @@ void	Server::check_nickname(ClientIter client_iter, std::string remind, std::str
 	else
 		nick = seminick;
 
-	if (remind.empty())
+	if (remind.empty()){
 		send_message(fd, ":" + hostname + " 431 * NICK :No nickname given\r\n");
+		return ;
+	}
 	for(UnregistredIter it = un_names.begin(); it != un_names.end(); it++){
 		if (it->second == nick && it->first != fd){
 			send_message(fd, ":" + hostname + " 433 * NICK :Is already in use........\r\n");
@@ -38,6 +39,12 @@ void	Server::check_nickname(ClientIter client_iter, std::string remind, std::str
 		client_iter->second.increment_isvalid(command);
 	else{
 		oldnick = client_iter->second.get_client_nick();
+		nick_iter = std::find(nick_names.begin(), nick_names.end(), oldnick);
+		if (nick_iter != nick_names.end())
+		{
+			nick_names.erase(nick_iter);
+			nick_names.push_back(nick);
+		}
 		std::string str = ":" + oldnick + "!~" + client_iter->second.get_client_username()+ "@" + client_iter->second.get_clientip() + " " + command + " :" + nick + "\r\n";
 		if (nick != oldnick)
 			send_message(fd,  str);
