@@ -71,6 +71,7 @@ void	Server::kick(ClientIter client_iter, std::string remind, std::string comman
 					send_message(it->first, ":" + client_iter->second.get_client_nick() + "!~" + client_iter->second.get_client_username()+ "@" + client_iter->second.get_clientip() + " " + command + " :" + remind + "\n\r");
 			if (channels_iter->second->client.size() == 0)
 				listChannels.erase(channels_iter);
+				delete channels_iter->second;
 			}
 			else
 				send_message(fd, ":" + hostname + " 482 " + client_iter->second.get_client_nick() + " " + channelname + " :They aren't on that channel\r\n");

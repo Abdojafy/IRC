@@ -120,6 +120,7 @@ void Server::remove_client(int fd)
 			ctlc_kick(itc, it);
 		if (it->second->client.size() == 0){
 			listChannels.erase(it);
+			delete it->second;
 		}
 		if (listChannels.size() == 0)
 			break;
