@@ -208,8 +208,10 @@ void	Server::modes(VecStr command, PollIter it_client)
 	bool	take;
 	std::string message;
 
-	if (command.size() < 4 && command.size() > 1)
+	if (command.size() >= 1)
 	{
+		if (command.size() == 1)
+			return;
 		channel = *it++;
 		mode = *it++;
 		if (command.size() == 3)

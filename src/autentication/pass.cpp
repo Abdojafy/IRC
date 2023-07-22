@@ -7,7 +7,7 @@ void	Server::check_pass(ClientIter client_iter, std::string remind, std::string 
 	else if (remind.empty())
 		send_message(fd, ":" + hostname + " 461 " + command + "PASS :Not enough parameters\r\n");
 	else if (remind.compare(password))
-		send_message(fd, ":" + hostname + "464 PASS :Password Incorrect\r\n");
+		send_message(fd, ":" + hostname + " 464 PASS :Password Incorrect\r\n");
 	else
 	{
 		pass = remind;
