@@ -19,7 +19,8 @@ public:
 	//set client (ip : hotname)
 	void		set_clientip(std::string ip);
 	void 		set_registred();
-	void		set_client_data(std::string username, std::string realname, std::string pass, std::string nick);
+	void		set_client_user(std::string user);
+	void		set_client_data(std::string realname, std::string pass);
 	void		set_client_nick(std::string  nick);
 	std::string	get_client_nick();
 	std::string	get_client_username();

@@ -30,6 +30,7 @@ void	Server::check_nickname(ClientIter client_iter, std::string remind, std::str
 			return;
 		}
 	}
+	client_iter->second.set_client_nick(nick);
 	un_iter = un_names.find(fd);
 	if (un_iter != un_names.end())
 		un_names.erase(un_iter);
