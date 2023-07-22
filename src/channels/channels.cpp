@@ -21,13 +21,13 @@ channels::channels(std::string name, std::string password, std::string mode)
 		this->name = name;
 		this->password = password;
 		this->mode = mode;
-		classement = this->client.size() + 1;
 	}
 }
 
 channels::~channels()
 {
 	//delete channels;
+		// delete this->client;
 }
 
 std::string channels::get_name()
@@ -85,16 +85,6 @@ size_t channels::get_limite()
 void	channels::set_limite(size_t new_limite)
 {
 	this->limite = new_limite;
-}
-
-size_t channels::get_classement()
-{
-	return (classement);
-}
-
-void	channels::set_classement(size_t new_classement)
-{
-	this->classement = new_classement;
 }
 
 std::string	channels::get_users()

@@ -35,6 +35,7 @@ int Server::exec_command(int fd)
 	in_addr				addrip;
 	std::string			remind;
 	ClientIter			client_iter;
+	// std::cout<<"-----------------------------clientmsg---------------------------"<<client_msg<<std::endl;
 
 	client_iter = clients_map.find(fd);
 	addrip = get_clientip(fd);
@@ -46,6 +47,7 @@ int Server::exec_command(int fd)
 	ss << client_msg;
 	std::getline(ss, command, ' ');
 	ft_upper(command);
+	// std::cout<<"-----------------------------command---------------------------"<<command<<std::endl;
 	std::getline (ss, remind, '\0');
 	remind = trim_spaces(remind);
 	 if (!command.compare("NICK"))

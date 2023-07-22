@@ -114,6 +114,21 @@ void Server::remove_client(int fd)
 	if (nick_iter != nick_names.end())
 		nick_names.erase(nick_iter);
 
+
+		for (channelsIter it = listChannels.begin(); it != listChannels.end(); it++)
+		{
+			
+			ClientIter itc = it->second->client.find(fd);
+			if(itc != it->second->client.end())
+			{
+				ctlc_kick(itc, it);
+			}
+			
+			
+			
+		}
+
+
 	for (PollIter pit = poll_fds.begin(); pit < poll_fds.end(); pit++){
 		if(fd == pit->fd){
 			poll_fds.erase(pit);
@@ -130,6 +145,7 @@ void Server::read_client_data(PollIter it){
 		bzero(buffer, BUFFERSIZE - 1);
 		int recv_len = read(it->fd, buffer, BUFFERSIZE - 1);
 		buffer[recv_len] = '\0';
+			//std::cout<<"-----------------------------buffer---------------------------"<<buffer<<std::endl;
 		client_msg += buffer;
 		if (client_msg.find('\n') == std::string::npos)
 			return;
@@ -178,11 +194,34 @@ Server::Server(char **av)
         }
 		for (VecIter it = nick_names.begin(); it != nick_names.end(); it++)
 			std::cout<<"registred nick = "<<*it<<" size = "<<nick_names.size()<<std::endl;
+
+			std::cout << "***********" << std::endl;
+		for (channelsIter it = listChannels.begin(); it != listChannels.end(); it++)
+		{
+			std::cout << "channel : " << it->first << " modes : " << it->second->get_mode() << " topic : " << it->second->get_topic() << std::endl;
+			for(ClientIter itc = it->second->client.begin(); itc != it->second->client.end(); itc++)
+			{
+				std::cout << "		client : " << itc->first << " | " << itc->second.get_client_nick() << std::endl;
+			}
+			
+			for(ClientIter itc = it->second->invited.begin(); itc != it->second->invited.end(); itc++)
+			{
+				std::cout << "		invited : " << itc->first << " | " << itc->second.get_client_nick() << std::endl;
+			}
+			
+			for(ClientIter itc = it->second->operators.begin(); itc != it->second->operators.end(); itc++)
+			{
+				std::cout << "		operators : " << itc->first << " | " << itc->second.get_client_nick() << std::endl;
+			}
+		}
 	}
 	close(server_socket);
 }
 
 Server::~Server()
 {
-
+	for (channelsIter it = listChannels.begin(); it != listChannels.end(); it++)
+	{
+		delete it->second;
+	}
 }

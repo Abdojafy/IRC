@@ -13,7 +13,6 @@ private:
 	std::string 	password;
 	std::string		topic;
 	size_t			limite;
-	size_t			classement;
 public:
 	typedef std::map<int, Client>::iterator					ClientIter;
 	typedef std::map<int, Client>							ClientMap;
@@ -37,8 +36,6 @@ public:
 	std::string		get_users();
 	size_t			get_limite();
 	void			set_limite(size_t limite);
-	size_t			get_classement();
-	void			set_classement(size_t classement);
 };
 
 #endif

@@ -78,6 +78,7 @@ public:
 	void			privmsg(ClientIter client_iter, std::string remind, std::string command, int fd);
 	void			notice(ClientIter client_iter, std::string remind, std::string command, int fd);
 	void			boot_help(ClientIter client_iter, std::string remind, std::string command, int fd);
+	void			ctlc_kick(ClientIter client_iter, channelsIter channels_iter);
 
 private:
 	//socket hia fd
