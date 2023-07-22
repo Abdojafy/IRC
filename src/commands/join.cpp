@@ -119,21 +119,30 @@ void	Server::join_channels(PollIter it_client, std::string name, std::string pas
 	}
 
 	// // insert a channel successfully
+	std::cout<<"1"<<std::endl;
 	my_channel->client.insert(std::make_pair(it_client->fd, *my_client));
 	listChannels.insert(std::make_pair(name, my_channel));
+	std::cout<<"2"<<std::endl;
+	std::cout<<"size = "<< my_channel->client.size()<<std::endl;
 	for(ClientIter joined = my_channel->client.begin(); joined != my_channel->client.end(); joined++)
 	{
+
 		message =  ":" + my_client->get_client_nick() + "!~" + my_client->get_client_username() + "@" + my_client->get_clientip() + " JOIN " + name + "\r\n" ;
 		send_message(joined->first, message);
 	}
+	std::cout<<"3"<<std::endl;
 	message.clear();
 	if (!my_channel->get_mode().empty())
 		message = ":" + my_client->get_clientip() + " MODE " + name + " +" + my_channel->get_mode() + "\r\n";
+	std::cout<<"4"<<std::endl;
 	if (!my_channel->get_topic().empty())
 		message += ":" + my_client->get_clientip() + " 332 " + my_client->get_client_nick() + " " + name + " :" + my_channel->get_topic() + "\r\n";
+	std::cout<<"5"<<std::endl;
 	message += ":" + my_client->get_clientip() + " 353 " + my_client->get_client_nick() + " = " + name + " :" + my_channel->get_users() + "\r\n";
 	message += ":" + my_client->get_clientip() + " 366 " + my_client->get_client_nick() + " " + name + " :End of /NAMES list." + "\r\n";
+	std::cout<<"6"<<std::endl;
 	send_message(it_client->fd, message);
+	std::cout<<"7"<<std::endl;
 }
 
 void	Server::join(VecStr command, PollIter it_client)

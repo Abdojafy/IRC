@@ -182,14 +182,14 @@ Server::Server(char **av)
 				poll_result--;
 			}
 		}
-		for (ClientIter it = clients_map.begin(); it != clients_map.end(); it++){
-            std::cout<<"im client = "<<it->second.get_client_nick()<<" with fd = "<<it->first<<" ip = "<<it->second.get_clientip()<<" and im "<<it->second.get_registred()<<" client size = "<<clients_map.size()<<std::endl;
-        }
-        for (UnregistredIter it = un_names.begin(); it != un_names.end(); it++){
-            std::cout<<"nick = "<<it->second<<" un_names size = "<<un_names.size()<<std::endl;
-        }
-		for (VecIter it = nick_names.begin(); it != nick_names.end(); it++)
-			std::cout<<"registred nick = "<<*it<<" size = "<<nick_names.size()<<std::endl;
+		// for (ClientIter it = clients_map.begin(); it != clients_map.end(); it++){
+        //     std::cout<<"im client = "<<it->second.get_client_nick()<<" with fd = "<<it->first<<" ip = "<<it->second.get_clientip()<<" and im "<<it->second.get_registred()<<" client size = "<<clients_map.size()<<std::endl;
+        // }
+        // for (UnregistredIter it = un_names.begin(); it != un_names.end(); it++){
+        //     std::cout<<"nick = "<<it->second<<" un_names size = "<<un_names.size()<<std::endl;
+        // }
+		// for (VecIter it = nick_names.begin(); it != nick_names.end(); it++)
+		// 	std::cout<<"registred nick = "<<*it<<" size = "<<nick_names.size()<<std::endl;
 
 		// 	std::cout << "***********" << std::endl;
 		// for (channelsIter it = listChannels.begin(); it != listChannels.end(); it++)
