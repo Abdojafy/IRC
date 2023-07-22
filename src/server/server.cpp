@@ -141,7 +141,6 @@ void Server::read_client_data(PollIter it){
 		bzero(buffer, BUFFERSIZE - 1);
 		int recv_len = read(it->fd, buffer, BUFFERSIZE - 1);
 		buffer[recv_len] = '\0';
-			//std::cout<<"-----------------------------buffer---------------------------"<<buffer<<std::endl;
 		client_msg += buffer;
 		if (client_msg.find('\n') == std::string::npos)
 			return;
