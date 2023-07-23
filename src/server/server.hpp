@@ -92,13 +92,13 @@ private:
 	char 		buffer[BUFFERSIZE];
 	std::string	client_msg;
 	PollFds 	poll_fds;
+	UnregistredMap 	client_bf;
 	sockaddr_in addr_server;
 	sockaddr_in addr_client;
 	int			save_fd;
 
 	//authentication variables
 	VecStr			nick_names;
-	UnregistredMap 	unregistred_nicks;
 	std::string		realname;
 	std::string		username;
 	std::string		nick;

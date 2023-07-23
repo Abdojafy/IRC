@@ -137,7 +137,13 @@ void Server::remove_client(int fd)
 }
 
 void Server::read_client_data(PollIter it){
-	std::cout<<"fd = "<<it->fd<<" save = "<<save_fd<<std::endl;
+	UnregistredIter clit;
+	clit = client_bf.find(it->fd);
+	if(clit == client_bf.end()){
+		client_bf.insert(std::make_pair(it->fd, ""));
+		clit = client_bf.find(it->fd);
+	}
+
 	if (it->revents & (POLLHUP | POLLERR))
 		remove_client(it->fd);
 	else if (it->revents & POLLIN){
@@ -145,9 +151,10 @@ void Server::read_client_data(PollIter it){
 		int recv_len = read(it->fd, buffer, BUFFERSIZE - 1);
 		buffer[recv_len] = '\0';
 		if (save_fd == it->fd)
-			client_msg += buffer;
+		 clit->second += buffer;
 		else 
-			client_msg = buffer;
+			clit->second = buffer;
+		client_msg = clit->second;
 		if (client_msg.find('\n') == std::string::npos){
 			save_fd = it->fd;
 			return;
@@ -161,6 +168,7 @@ void Server::read_client_data(PollIter it){
 		std::cout << "Received from client : " << client_msg << std::endl;
 		// send(it->fd, "Message received\n", 17, 0);
 		client_msg.clear();
+		clit->second.clear();
 	}
 }
 
