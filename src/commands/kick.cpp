@@ -58,6 +58,12 @@ void	Server::kick(ClientIter client_iter, std::string remind, std::string comman
 					channels_iter = listChannels.find(channelname);
 					channels_iter->second->client.erase(cit);
 					channels_iter->second->operators.insert(std::make_pair(channels_iter->second->client.begin()->first, channels_iter->second->client.begin()->second));
+					for(ClientIter joined = channels_iter->second->client.begin(); joined != channels_iter->second->client.end(); joined++)
+					{
+						//:mine!~t@197.230.30.146 MODE #abdoo +o mine
+						std::string message =  ":" + client_iter->second.get_client_nick() + "!~" + client_iter->second.get_client_username() + "@" + client_iter->second.get_clientip() + " MODE " + channels_iter->first + " +o " + channels_iter->second->client.begin()->second.get_client_nick() + "\r\n" ;
+						send_message(joined->first, message);
+					}
 				}
 				else
 					channels_iter->second->client.erase(cit);

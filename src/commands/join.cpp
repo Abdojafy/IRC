@@ -69,8 +69,8 @@ void	Server::join_channels(PollIter it_client, std::string name, std::string pas
 	}
 
 	//already joined to the channel
-	ClientIter joined = my_channel->client.find(my_client->get_client_socket());
-	if (joined != my_channel->client.end())
+	ClientIter joined_ = my_channel->client.find(my_client->get_client_socket());
+	if (joined_ != my_channel->client.end())
 		return;
 
 	//check password in mode (+k)
