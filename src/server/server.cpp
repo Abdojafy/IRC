@@ -100,34 +100,43 @@ void Server::remove_client(int fd)
 	ClientIter client_iter;
 	VecIter		nick_iter;
 	UnregistredIter un_iter;
+	bool erase = false;
+	channelsIter it = listChannels.begin();
 
 	printf("Client disconnected\n");
+	while (it != listChannels.end())
+	{
+			ClientIter itc = it->second->client.find(fd);
+			if(itc != it->second->client.end())
+				ctlc_kick(itc, it);
+			ClientIter itc_join = it->second->invited.find(fd);
+			if(itc_join != it->second->invited.end())
+				it->second->invited.erase(itc_join);
+			if (it->second->client.size() == 0){
+				delete it->second;
+				listChannels.erase(it);
+				erase = 1;
+			}
+			if (listChannels.size() == 0)
+				break;
+			if (erase)
+			{
+				it = listChannels.begin();
+				erase = false;
+			}
+			else
+				it++;
+	}
 	if (clients_map.size() > 0){
 		client_iter = clients_map.find(fd);
 		clients_map.erase(client_iter);
 	}
-	
     un_iter = un_names.find(fd);
     if (un_iter != un_names.end())
         un_names.erase(un_iter);
 	nick_iter = std::find(nick_names.begin(), nick_names.end(), un_iter->second);
 	if (nick_iter != nick_names.end())
 		nick_names.erase(nick_iter);
-	for (channelsIter it = listChannels.begin(); it != listChannels.end(); it++)
-	{
-		ClientIter itc = it->second->client.find(fd);
-		if(itc != it->second->client.end())
-			ctlc_kick(itc, it);
-		ClientIter itc_join = it->second->invited.find(fd);
-		if(itc_join != it->second->invited.end())
-			it->second->invited.erase(itc_join);
-		if (it->second->client.size() == 0){
-			delete it->second;
-			listChannels.erase(it);
-		}
-		if (listChannels.size() == 0)
-			break;
-	}
 	for (PollIter pit = poll_fds.begin(); pit < poll_fds.end(); pit++){
 		if(fd == pit->fd){
 			poll_fds.erase(pit);
