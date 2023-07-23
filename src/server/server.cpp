@@ -80,8 +80,7 @@ void Server::accept_new_client()
 		perror("accept");
 		exit (1);
 	}
-	//  char client_hostname[NI_MAXHOST];
-    //     int result = getnameinfo((struct sockaddr *)&address, sizeof(address), client_hostname, NI_MAXHOST, NULL, 0, 0);
+	
 	if (poll_fds.size() < MAXCLIENTS)
 	{
 		pollfd p;
