@@ -94,6 +94,7 @@ private:
 	PollFds 	poll_fds;
 	sockaddr_in addr_server;
 	sockaddr_in addr_client;
+	int			save_fd;
 
 	//authentication variables
 	VecStr			nick_names;

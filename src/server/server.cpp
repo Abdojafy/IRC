@@ -137,16 +137,21 @@ void Server::remove_client(int fd)
 }
 
 void Server::read_client_data(PollIter it){
-
+	std::cout<<"fd = "<<it->fd<<" save = "<<save_fd<<std::endl;
 	if (it->revents & (POLLHUP | POLLERR))
 		remove_client(it->fd);
 	else if (it->revents & POLLIN){
 		bzero(buffer, BUFFERSIZE - 1);
 		int recv_len = read(it->fd, buffer, BUFFERSIZE - 1);
 		buffer[recv_len] = '\0';
-		client_msg += buffer;
-		if (client_msg.find('\n') == std::string::npos)
+		if (save_fd == it->fd)
+			client_msg += buffer;
+		else 
+			client_msg = buffer;
+		if (client_msg.find('\n') == std::string::npos){
+			save_fd = it->fd;
 			return;
+		}
 		//ay haja rseltiha  mn lclient atl9aha fhad lbuffer les command dima ayb9aw wjiwkom hna b7all "pass kick" wa majawarahoma
 		//hna fin t9dar tjawb lclient khdem bhad send li lta7t 3tiha it->fd o kteb lclient li bghiti
 		exec_command(it->fd);
@@ -161,6 +166,7 @@ void Server::read_client_data(PollIter it){
 
 Server::Server(char **av)
 {
+	save_fd = -1;
 	set_pass_and_port(av);
 	create_bind_listen(port);
 	pollfd p;
