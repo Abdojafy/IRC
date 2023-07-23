@@ -26,7 +26,7 @@ void	Server::check_nickname(ClientIter client_iter, std::string remind, std::str
 	}
 	for(UnregistredIter it = un_names.begin(); it != un_names.end(); it++){
 		if (it->second == nick && it->first != fd){
-			send_message(fd, ":" + hostname + " 433 * NICK :Is already in use........\r\n");
+			send_message(fd, ":" + hostname + " 433 * NICK :Is already in use.\r\n");
 			return;
 		}
 	}

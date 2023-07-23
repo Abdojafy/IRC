@@ -102,13 +102,7 @@ void	Server::join_channels(PollIter it_client, std::string name, std::string pas
 	//check invite-only in mode (+i)
 	if ((my_channel->get_mode()).find("i") != std::string::npos)
 	{
-		it_map_client = my_channel->invited.begin();
-		while (it_map_client != my_channel->invited.end())
-		{
-			if (it_map_client->first == it_client->fd)
-				break;
-			it_map_client++;
-		}
+		it_map_client = my_channel->invited.find(it_client->fd);
 		if (it_map_client == my_channel->invited.end())
 		{
 			message = ":" + my_client->get_clientip() + " 473 " + my_client->get_client_nick() + " " + it_channel->second->get_name() + " :Cannot join channel (+i)\r\n";
