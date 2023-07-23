@@ -8,7 +8,6 @@ void	Server::invite_client(ClientIter it_client, channels *my_channel, ClientIte
 	ClientIter target = my_channel->client.find(my_client_it->first);
 	if (target == my_channel->client.end())
 	{
-			//:zirconium.libera.chat 442 passs #general :You're not on that channel
 			message = ":" + my_client_it->second.get_clientip() + " 442 " + my_client_it->second.get_client_nick() + " " + my_channel->get_name() + " :You're not on that channel\r\n";
 			send_message(my_client_it->first, message);
 			return;
@@ -18,7 +17,6 @@ void	Server::invite_client(ClientIter it_client, channels *my_channel, ClientIte
 	target = my_channel->client.find(it_client->first);
 	if (target != my_channel->client.end())
 	{
-		//:mercury.libera.chat 443 mymoon passs #general :is already on channel
 			message = ":" + my_client_it->second.get_clientip() + " 443 " + my_client_it->second.get_client_nick() + " " + it_client->second.get_client_nick() + " " + my_channel->get_name() + " :is already on channel\r\n";
 			send_message(my_client_it->first, message);
 			return;
@@ -28,7 +26,6 @@ void	Server::invite_client(ClientIter it_client, channels *my_channel, ClientIte
 	// channel invited only
 	if (my_channel->get_mode().find("i") != std::string::npos)
 	{
-		//:zirconium.libera.chat 482 passs #general :You're not channel operator
 		target = my_channel->operators.find(my_client_it->first);
 		if (target == my_channel->client.end())
 		{
@@ -40,8 +37,6 @@ void	Server::invite_client(ClientIter it_client, channels *my_channel, ClientIte
 	}
 	my_channel->invited.insert(std::make_pair(it_client->first, it_client->second));
 	
-	// invite success
-	//:lead.libera.chat 341 oussamaa passe #yoyo
 	message = ":" + my_client_it->second.get_clientip() + " 341 " + my_client_it->second.get_client_nick() + " " + it_client->second.get_client_nick()  + " " + my_channel->get_name() + "\r\n";
 	send_message(it_client->first, message);
 	return;
@@ -70,13 +65,11 @@ void	Server::invite(VecStr command, PollIter it_client)
 		}
 		if (my_channel == listChannels.end() || client_it == clients_map.end())
 		{
-			//:punch.wa.us.dal.net 401 hello hel :No such nick/channel
 			message = ":" + my_client_it->second.get_clientip() + " 401 " + my_client_it->second.get_client_nick() + " " + channel + " :No such nick/channel\r\n";
 			send_message(it_client->fd, message);
 			return;
 		}
 		invite_client(client_it, my_channel->second, my_client_it);
-		//std::cout << "nickname : " << nickname << " channel : " << channel << std::endl;
 	}
 	else
 	{

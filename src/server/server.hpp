@@ -76,7 +76,6 @@ public:
 
 private:
 	int			server_socket;
-	UnregistredMap		un_names;
 	int			client_socket;
 	int			poll_result;
 	int			port;
@@ -85,7 +84,6 @@ private:
 	char 		buffer[BUFFERSIZE];
 	std::string	client_msg;
 	PollFds 	poll_fds;
-	UnregistredMap 	client_bf;
 	sockaddr_in addr_server;
 	sockaddr_in addr_client;
 	int			save_fd;
@@ -96,6 +94,8 @@ private:
 	std::string		username;
 	std::string		nick;
 	std::string		pass;
+	UnregistredMap	un_names;
+	UnregistredMap 	client_bf;
 
 	//JOIN variables
 	mapChannels listChannels;

@@ -36,6 +36,7 @@ int Server::exec_command(int fd)
 	std::string			remind;
 	ClientIter			client_iter;
 
+	
 	client_iter = clients_map.find(fd);
 	addrip = get_clientip(fd);
 	hostname = inet_ntoa(addrip);

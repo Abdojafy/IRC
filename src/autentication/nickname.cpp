@@ -18,7 +18,6 @@ void	Server::check_nickname(ClientIter client_iter, std::string remind, std::str
 	UnregistredIter		un_iter;
 
 	nick = remind;
-	
 	if (parce_nick(nick))
 	{
 		send_message(fd, ":" + hostname + " 432 NICK :Erroneus nickname\r\n");
