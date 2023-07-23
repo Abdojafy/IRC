@@ -48,7 +48,7 @@ void	Server::kick(ClientIter client_iter, std::string remind, std::string comman
 		}
 		if (is_admin || cit->first == fd){
 			if (is_nickname){
-				send_message(cit->first, ":" + client_iter->second.get_client_nick() + "!~" + client_iter->second.get_client_username()+ "@" + client_iter->second.get_clientip() + " " + command + " " + remind + " " + clientname + "\r\n");
+				send_message(cit->first, ":" + client_iter->second.get_client_nick() + "!~" + client_iter->second.get_client_username()+ "@" + client_iter->second.get_clientip() + " " + command + " " + remind + " :" + clientname + "\r\n");
 				if (channels_iter->second->client.size() == 1)
 				{
 					channels_iter->second->client.erase(cit);
@@ -79,7 +79,7 @@ void	Server::kick(ClientIter client_iter, std::string remind, std::string comman
 					channels_iter->second->invited.erase(op_it);
 				channels_iter = listChannels.find(channelname);
 				for (ClientIter it = channels_iter->second->client.begin(); it != channels_iter->second->client.end(); it++)
-					send_message(it->first, ":" + client_iter->second.get_client_nick() + "!~" + client_iter->second.get_client_username()+ "@" + client_iter->second.get_clientip() + " " + command + " " + remind + " :" + clientname + "\r\n");
+					send_message(it->first, ":" + client_iter->second.get_client_nick() + "!~" + client_iter->second.get_client_username()+ "@" + client_iter->second.get_clientip() + " " + command + " :" + remind +  "\r\n");
 
 					// send_message(it->first, ":" + client_iter->second.get_client_nick() + "!~" + client_iter->second.get_client_username()+ "@" + client_iter->second.get_clientip() + " " + command + " :" + remind + "\r\n");
 				if (channels_iter->second->client.size() == 0)

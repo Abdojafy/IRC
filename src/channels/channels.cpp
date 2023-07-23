@@ -101,7 +101,6 @@ std::string	channels::get_users()
 		{
 			if (it->first == oper->first)
 			{
-				//space between two operators
 				if (!oper_name.empty())	
 				{
 					oper_name += " ";

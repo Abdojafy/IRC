@@ -1,7 +1,6 @@
 #include"../server/server.hpp"
 
 
-//:zinc.libera.chat 421 youssef yopic :Unknown command
 void	Server:: read_command(PollIter it_client)
 {
 	std::stringstream	ss;
@@ -23,13 +22,11 @@ void	Server:: read_command(PollIter it_client)
 	std::getline (ss, remind, '\0');
 	remind = trim_spaces(remind);
 	
-	
-	
 	VecStr command = split(client_msg, ' ');
 	VecIter it = command.begin();
 	std::string message;
 	std::string unk_command;
-	// ClientIter my_client = clients_map.find(it_client->fd);
+
 	if (it != command.end())
 	{
 		unk_command = *it;

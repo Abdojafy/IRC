@@ -1,5 +1,13 @@
 #include "../server/server.hpp"
 
+int	parce_nick(std::string &nick){
+	for (size_t i = 0; i < nick.size(); i++){
+		if (!std::isalnum(nick[i]))
+			return (1);
+	}
+	return (0);
+}
+
 
 void	Server::check_nickname(ClientIter client_iter, std::string remind, std::string command, std::string hostname, int fd){
 	
@@ -8,25 +16,21 @@ void	Server::check_nickname(ClientIter client_iter, std::string remind, std::str
 	std::string 		seminick;
 	std::string			oldnick;
 	UnregistredIter		un_iter;
-	int					flag = 0;
 
-	ss << remind;
-	std::getline(ss, seminick, ' ');
-	seminick = trim_spaces(seminick);
-	if (*seminick.begin() == ':'){
-		remind.erase(remind.begin());
-		nick = remind;
+	nick = remind;
+	
+	if (parce_nick(nick))
+	{
+		send_message(fd, ":" + hostname + " 432 NICK :Erroneus nickname\r\n");
+		return ;
 	}
-	else
-		nick = seminick;
-
 	if (remind.empty()){
-		send_message(fd, ":" + hostname + " 431 * NICK :No nickname given\r\n");
+		send_message(fd, ":" + hostname + " 431 NICK :No nickname given\r\n");
 		return ;
 	}
 	for(UnregistredIter it = un_names.begin(); it != un_names.end(); it++){
 		if (it->second == nick && it->first != fd){
-			send_message(fd, ":" + hostname + " 433 * NICK :Is already in use.\r\n");
+			send_message(fd, ":" + hostname + " 433  NICK :Is already in use.\r\n");
 			return;
 		}
 	}

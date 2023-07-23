@@ -6,6 +6,7 @@
 #include "../channels/channels.hpp"
 #include <netinet/in.h>		/* in_addr */
 #include <cstring>
+#include <fcntl.h>
 
 
 #define BUFFERSIZE	1024
@@ -28,33 +29,26 @@ public:
 	typedef std::map<std::string, channels *>				mapChannels;
 	typedef std::map<std::string, channels *>::iterator		channelsIter;
 
-	//lclient map t9dar taccidi lih mn aya blassa nta fiha dir Server::clients_map 
 	static ClientMap	clients_map;
-	//send message t9dar tsendi biha aya 7aja lclient 3tiha lfd o lmsg 7ta hia t9dar t3ayt liha mnin mabghiti dir Server::send_message
 	static void			send_message(int fd, std::string message);
 	void				create_bind_listen(int port);
 	void				accept_new_client();
 	struct in_addr		get_clientip(int fd);
 	void				client_isregistred(ClientIter client_iter, std::string hostname, int fd);
-	//hna kan9ra aya msg jani mn 3and lclient
 	void				read_client_data(PollIter it);
-	//hna fin kanregistre client jdid
 	int					exec_command(int fd);
 	void				set_pass_and_port(char **av);
 	void				remove_client(int fd);
 	
 	std::string			help_msg(ClientIter client_iter);
-	//JOIN functions
 	void			read_command(PollIter it_client);
 	void			join(VecStr command, PollIter it_client);
 	bool			check_channel_name(std::string name);
 	void			join_channels(PollIter it_client, std::string name, std::string pass);
 
-	//KICK functions
 	void			kick(ClientIter client_iter, std::string remind, std::string command, int fd, std::string hostname);
 	
 	
-	//INVITE functions
 	void			invite(VecStr command, PollIter it_client);
 	void			invite_client(ClientIter it_client, channels *my_channel, ClientIter my_client_it);
 
@@ -81,7 +75,6 @@ public:
 	void			ctlc_kick(ClientIter client_iter, channelsIter channels_iter);
 
 private:
-	//socket hia fd
 	int			server_socket;
 	UnregistredMap		un_names;
 	int			client_socket;

@@ -88,8 +88,6 @@ void Server::accept_new_client()
 		p.fd = client_socket;
 		p.events = POLLIN;
 		poll_fds.push_back(p);
-		std::cout<<"new connection from client : "<<inet_ntoa(addr_client.sin_addr)<<"  in port : "<<htons(port)<<std::endl;
-		send(client_socket, "wellcome to the server\n", 23, 0);
 		client = Client(addr_client, client_socket);
 		clients_map.insert(std::make_pair(client_socket, client));
 	}
@@ -103,7 +101,6 @@ void Server::remove_client(int fd)
 	bool erase = false;
 	channelsIter it = listChannels.begin();
 
-	printf("Client disconnected\n");
 	while (it != listChannels.end())
 	{
 			ClientIter itc = it->second->client.find(fd);
@@ -168,14 +165,10 @@ void Server::read_client_data(PollIter it){
 			save_fd = it->fd;
 			return;
 		}
-		//ay haja rseltiha  mn lclient atl9aha fhad lbuffer les command dima ayb9aw wjiwkom hna b7all "pass kick" wa majawarahoma
-		//hna fin t9dar tjawb lclient khdem bhad send li lta7t 3tiha it->fd o kteb lclient li bghiti
 		exec_command(it->fd);
 		ClientIter this_client = clients_map.find(it->fd);
 		if (this_client->second.get_registred())
 			read_command(it);
-		std::cout << "Received from client : " << client_msg << std::endl;
-		// send(it->fd, "Message received\n", 17, 0);
 		client_msg.clear();
 		clit->second.clear();
 	}
@@ -199,6 +192,7 @@ Server::Server(char **av)
 		}
 		PollFds tmp = poll_fds;
 		for (PollIter it = tmp.begin(); it != tmp.end() && poll_result > 0; it++){
+			fcntl(it->fd, F_SETFL, O_NONBLOCK);
 			if (it->revents & POLLIN && it->fd == server_socket){
 				accept_new_client();
 				poll_result--;
@@ -207,42 +201,10 @@ Server::Server(char **av)
 				poll_result--;
 			}
 		}
-		// for (ClientIter it = clients_map.begin(); it != clients_map.end(); it++){
-        //     std::cout<<"im client = "<<it->second.get_client_nick()<<" with fd = "<<it->first<<" ip = "<<it->second.get_clientip()<<" and im "<<it->second.get_registred()<<" client size = "<<clients_map.size()<<std::endl;
-        // }
-        // for (UnregistredIter it = un_names.begin(); it != un_names.end(); it++){
-        //     std::cout<<"nick = "<<it->second<<" un_names size = "<<un_names.size()<<std::endl;
-        // }
-		// for (VecIter it = nick_names.begin(); it != nick_names.end(); it++)
-		// 	std::cout<<"registred nick = "<<*it<<" size = "<<nick_names.size()<<std::endl;
-
-		// 	std::cout << "***********" << std::endl;
-		// for (channelsIter it = listChannels.begin(); it != listChannels.end(); it++)
-		// {
-		// 	std::cout << "channel : " << it->first << " modes : " << it->second->get_mode() << " topic : " << it->second->get_topic() << std::endl;
-		// 	for(ClientIter itc = it->second->client.begin(); itc != it->second->client.end(); itc++)
-		// 	{
-		// 		std::cout << "		client : " << itc->first << " | " << itc->second.get_client_nick() << std::endl;
-		// 	}
-			
-		// 	for(ClientIter itc = it->second->invited.begin(); itc != it->second->invited.end(); itc++)
-		// 	{
-		// 		std::cout << "		invited : " << itc->first << " | " << itc->second.get_client_nick() << std::endl;
-		// 	}
-			
-		// 	for(ClientIter itc = it->second->operators.begin(); itc != it->second->operators.end(); itc++)
-		// 	{
-		// 		std::cout << "		operators : " << itc->first << " | " << itc->second.get_client_nick() << std::endl;
-		// 	}
-		// }
 	}
 	close(server_socket);
 }
 
 Server::~Server()
 {
-	// for (channelsIter it = listChannels.begin(); it != listChannels.end(); it++)
-	// {
-	// 	delete it->second;
-	// }
 }

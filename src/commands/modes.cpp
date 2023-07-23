@@ -13,7 +13,6 @@ void	Server::o_mode(bool take, channelsIter my_channel, ClientIter client_it, Cl
 			my_channel->second->operators.insert(std::make_pair(client_it->first, client_it->second));
 			for(ClientIter joined = my_channel->second->client.begin(); joined != my_channel->second->client.end(); joined++)
 			{
-				//:mine!~t@197.230.30.146 MODE #abdoo +o mine
 				message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " +o " + client_it->second.get_client_nick() + "\r\n" ;
 				send_message(joined->first, message);
 			}
@@ -27,7 +26,6 @@ void	Server::o_mode(bool take, channelsIter my_channel, ClientIter client_it, Cl
 			my_channel->second->operators.erase(client_it->first);
 			for(ClientIter joined = my_channel->second->client.begin(); joined != my_channel->second->client.end(); joined++)
 			{
-				//:mine!~t@197.230.30.146 MODE #abdoo -o mine
 				message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " -o " + client_it->second.get_client_nick() + "\r\n" ;
 				send_message(joined->first, message);
 			}
@@ -47,7 +45,6 @@ void	Server::i_mode(bool take, channelsIter my_channel, ClientIter my_client)
 			my_channel->second->join_mode("i");
 			for(ClientIter joined = my_channel->second->client.begin(); joined != my_channel->second->client.end(); joined++)
 			{
-				//:mine!~t@197.230.30.146 MODE #abdoo +i
 				message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " +i " + "\r\n" ;
 				send_message(joined->first, message);
 			}
@@ -61,7 +58,6 @@ void	Server::i_mode(bool take, channelsIter my_channel, ClientIter my_client)
 			(my_channel->second->get_mode()).erase(my_channel->second->get_mode().find("i"), 1);
 			for(ClientIter joined = my_channel->second->client.begin(); joined != my_channel->second->client.end(); joined++)
 			{
-				//:mine!~t@197.230.30.146 MODE #abdoo -i
 				message =  ":" + my_client->second.get_client_nick() + "!~" + my_client->second.get_client_username() + "@" + my_client->second.get_clientip() + " MODE " + my_channel->first + " -i" + "\r\n" ;
 				send_message(joined->first, message);
 			}
@@ -225,7 +221,6 @@ void	Server::modes(VecStr command, PollIter it_client)
 		}
 		if (command.size() == 1)
 		{
-			//:irc.example.com 324 dan #foobar +nrt
 			message = ":" + my_client_it->second.get_clientip() + " 324 " + my_client_it->second.get_client_nick() + " " + channel + " :" + my_channel->second->get_mode() + "\r\n";
 			send_message(it_client->fd, message);
 			return ;
@@ -233,7 +228,6 @@ void	Server::modes(VecStr command, PollIter it_client)
 		ClientIter oper_it = my_channel->second->operators.find(it_client->fd);
 		if (oper_it == my_channel->second->operators.end())
 		{
-			//:zinc.libera.chat 482 youssef #general :You're not a channel operator
 			message = ":" + my_client_it->second.get_clientip() + " 482 " + my_client_it->second.get_client_nick() + " " + channel + " :You're not a channel operator\r\n";
 			send_message(it_client->fd, message);
 			return;
@@ -268,7 +262,6 @@ void	Server::modes(VecStr command, PollIter it_client)
 					}
 					if (client_it == clients_map.end())
 					{
-						//:punch.wa.us.dal.net 403 hello hel :No such nick
 						message = ":" + my_client_it->second.get_clientip() + " 401 " + my_client_it->second.get_client_nick() + " " + channel + " :No such nick/channel\r\n";
 						send_message(it_client->fd, message);
 						return;
@@ -313,7 +306,6 @@ void	Server::modes(VecStr command, PollIter it_client)
 					t_mode(take, my_channel, my_client_it);
 				else
 				{
-					//error
 					return;
 				}
 				mode.erase(0, 1);

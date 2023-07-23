@@ -12,11 +12,8 @@ public:
 	sockaddr_in get_client_address();
 	void		increment_isvalid(std::string command);
 	int			get_isvalid();
-	//get_client_fd
 	int			get_client_socket();
-	//check if client registred or not false = not registred true = registred
 	bool 		get_registred();
-	//set client (ip : hotname)
 	void		set_clientip(std::string ip);
 	void 		set_registred();
 	void		set_client_user(std::string user);
@@ -25,7 +22,6 @@ public:
 	std::string	get_client_nick();
 	std::string	get_client_username();
 	std::string	get_client_realname();
-	//get client (ip : hotname)
 	std::string	get_clientip();
 
 

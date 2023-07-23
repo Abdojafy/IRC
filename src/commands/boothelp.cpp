@@ -2,8 +2,8 @@
 
 std::string Server::help_msg(ClientIter client_iter){
 	std::string str;
-	str = ":BOT PRIVMSG " + client_iter->second.get_client_nick() + " :Availabel Commands :  [join] [privmsg] [notice] [kick]\r\n";
-	str += ":BOT PRIVMSG " + client_iter->second.get_client_nick() + " :                      [user]  [topic]   [nick]  [pass]\r\n";
+	str = ":BOT PRIVMSG " + client_iter->second.get_client_nick() + " :Availabel Commands :  [join]    [privmsg]    [notice]    [kick]\r\n";
+	str += ":BOT PRIVMSG " + client_iter->second.get_client_nick() + " :                      [user]  [topic] [invite]  [nick]  [pass]\r\n";
 	str += ":BOT PRIVMSG " + client_iter->second.get_client_nick() + " :How to use         :  help + one of the above commands\r\n";
 	str += ":BOT PRIVMSG " + client_iter->second.get_client_nick() + " :Example            :  help join\r\n";
 	return (str);
@@ -29,5 +29,7 @@ void Server::boot_help(ClientIter client_iter, std::string remind, std::string c
 	else if (!command.compare("HELP") && !remind.compare("pass"))
 		send_message(fd, ":BOT PRIVMSG " + client_iter->second.get_client_nick() + " :Allows you to access to the server Syntax = (pass + password(that setted by the server)\r\n");
 	else if (!command.compare("HELP") && !remind.compare("topic"))
-		send_message(fd, ":BOT PRIVMSG " + client_iter->second.get_client_nick() + " :Allows you to change discreption of channel Syntax = (topic +  #channelName + new topic");
+		send_message(fd, ":BOT PRIVMSG " + client_iter->second.get_client_nick() + " :Allows you to change discreption of channel Syntax = (topic +  #channelName + new topic\r\n");
+	else if (!command.compare("HELP") && !remind.compare("invite"))
+		send_message(fd, ":BOT PRIVMSG " + client_iter->second.get_client_nick() + " :Allows you to invite someone to a specific channel Syntax = (topic +  #channelName + new topic\r\n");
 }
