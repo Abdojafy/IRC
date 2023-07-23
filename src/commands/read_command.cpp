@@ -42,7 +42,7 @@ void	Server:: read_command(PollIter it_client)
 		else if (!strcmp((*it).c_str(), "KICK"))
 		{
 			command.erase(it);
-			kick(client_iter, remind, str_command, it_client->fd, hostname);
+			kick(client_iter, remind, *it, it_client->fd, hostname);
 		}
 		else if (!strcmp((*it).c_str(), "INVITE"))
 		{

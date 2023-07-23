@@ -118,9 +118,12 @@ void Server::remove_client(int fd)
 		ClientIter itc = it->second->client.find(fd);
 		if(itc != it->second->client.end())
 			ctlc_kick(itc, it);
+		ClientIter itc_join = it->second->invited.find(fd);
+		if(itc_join != it->second->invited.end())
+			it->second->invited.erase(itc_join);
 		if (it->second->client.size() == 0){
-			listChannels.erase(it);
 			delete it->second;
+			listChannels.erase(it);
 		}
 		if (listChannels.size() == 0)
 			break;
