@@ -54,6 +54,8 @@ void	channels::set_topic(std::string &new_topic)
 
 std::string& channels::get_mode()
 {
+	// if (!mode.empty())
+	// 	mode = "+" + mode;
 	return (mode);
 }
 

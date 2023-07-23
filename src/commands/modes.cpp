@@ -182,7 +182,7 @@ void	Server::k_mode(bool take, channelsIter my_channel, ClientIter my_client, st
 			}
 			return;
 		}
-		if (!take)
+		if (!take && flag == my_channel->second->get_password())
 		{
 			(my_channel->second->get_mode()).erase(my_channel->second->get_mode().find("k"), 1);
 			for(ClientIter joined = my_channel->second->client.begin(); joined != my_channel->second->client.end(); joined++)
@@ -210,11 +210,10 @@ void	Server::modes(VecStr command, PollIter it_client)
 
 	if (command.size() >= 1)
 	{
-		if (command.size() == 1)
-			return;
 		channel = *it++;
-		mode = *it++;
-		if (command.size() == 3)
+		if (command.size() > 1)
+			mode = *it++;
+		if (command.size() > 2)
 			flag = *it;
 		channelsIter my_channel = listChannels.find(channel);
 		if (my_channel == listChannels.end())
@@ -224,15 +223,22 @@ void	Server::modes(VecStr command, PollIter it_client)
 			send_message(it_client->fd, message);
 			return;
 		}
-		my_client_it = my_channel->second->operators.find(it_client->fd);
-		if (my_client_it == my_channel->second->operators.end())
+		if (command.size() == 1)
+		{
+			//:irc.example.com 324 dan #foobar +nrt
+			message = ":" + my_client_it->second.get_clientip() + " 324 " + my_client_it->second.get_client_nick() + " " + channel + " :" + my_channel->second->get_mode() + "\r\n";
+			send_message(it_client->fd, message);
+			return ;
+		}
+		ClientIter oper_it = my_channel->second->operators.find(it_client->fd);
+		if (oper_it == my_channel->second->operators.end())
 		{
 			//:zinc.libera.chat 482 youssef #general :You're not a channel operator
 			message = ":" + my_client_it->second.get_clientip() + " 482 " + my_client_it->second.get_client_nick() + " " + channel + " :You're not a channel operator\r\n";
 			send_message(it_client->fd, message);
 			return;
 		}
-		if (mode.size() == 2)
+		if (mode.size() >= 2)
 		{
 			if(mode[0] == '+')
 				take = true; 
@@ -244,57 +250,73 @@ void	Server::modes(VecStr command, PollIter it_client)
 				return;
 			}
 			mode.erase(0, 1);
-			if (mode == "o")
+			while (!mode.empty())
 			{
-				if (command.size() != 3)
+				if (mode[0] == 'o')
 				{
-					message = ":" + my_client_it->second.get_clientip() + " 461 " + my_client_it->second.get_client_nick() + " MODE :Not enough parameters\r\n";
-					send_message(it_client->fd, message);
+					if (command.size() < 3)
+					{
+						message = ":" + my_client_it->second.get_clientip() + " 461 " + my_client_it->second.get_client_nick() + " MODE :Not enough parameters\r\n";
+						send_message(it_client->fd, message);
+						return;
+					}
+					while (client_it != clients_map.end())
+					{
+						if (!strcmp(client_it->second.get_client_nick().c_str(), flag.c_str()))
+							break; 
+						client_it++;
+					}
+					if (client_it == clients_map.end())
+					{
+						//:punch.wa.us.dal.net 403 hello hel :No such nick
+						message = ":" + my_client_it->second.get_clientip() + " 401 " + my_client_it->second.get_client_nick() + " " + channel + " :No such nick/channel\r\n";
+						send_message(it_client->fd, message);
+						return;
+					}
+					o_mode(take, my_channel, client_it, my_client_it);
+					command.erase(it);
+					if (command.size() > 2)
+						flag = *it;
+				}
+				else if (mode[0] == 'i')
+					i_mode(take, my_channel, my_client_it);
+				else if (mode[0] == 'l')
+				{
+					if (take && command.size() < 3)
+					{
+						message = ":" + my_client_it->second.get_clientip() + " 461 " + my_client_it->second.get_client_nick() + " MODE :Not enough parameters\r\n";
+						send_message(it_client->fd, message);
+						return;
+					}
+					l_mode(take, my_channel, my_client_it, flag);
+					if (take)
+					{
+						command.erase(it);
+						if (command.size() > 2)
+							flag = *it;
+					}
+				}
+				else if (mode[0] == 'k')
+				{
+					if (command.size() < 3)
+					{
+						message = ":" + my_client_it->second.get_clientip() + " 461 " + my_client_it->second.get_client_nick() + " MODE :Not enough parameters\r\n";
+						send_message(it_client->fd, message);
+						return;
+					}
+					k_mode(take, my_channel, my_client_it, flag);
+					command.erase(it);
+					if (command.size() > 2)
+						flag = *it;
+				}
+				else if (mode[0] == 't')
+					t_mode(take, my_channel, my_client_it);
+				else
+				{
+					//error
 					return;
 				}
-				while (client_it != clients_map.end())
-				{
-					if (!strcmp(client_it->second.get_client_nick().c_str(), flag.c_str()))
-						break; 
-					client_it++;
-				}
-				if (client_it == clients_map.end())
-				{
-					//:punch.wa.us.dal.net 403 hello hel :No such nick
-					message = ":" + my_client_it->second.get_clientip() + " 401 " + my_client_it->second.get_client_nick() + " " + channel + " :No such nick/channel\r\n";
-					send_message(it_client->fd, message);
-					return;
-				}
-				o_mode(take, my_channel, client_it, my_client_it);
-			}
-			else if (mode == "i")
-				i_mode(take, my_channel, my_client_it);
-			else if (mode == "l")
-			{
-				if (take && command.size() != 3)
-				{
-					message = ":" + my_client_it->second.get_clientip() + " 461 " + my_client_it->second.get_client_nick() + " MODE :Not enough parameters\r\n";
-					send_message(it_client->fd, message);
-					return;
-				}
-				l_mode(take, my_channel, my_client_it, flag);
-			}
-			else if (mode == "k")
-			{
-				if (take && command.size() != 3)
-				{
-					message = ":" + my_client_it->second.get_clientip() + " 461 " + my_client_it->second.get_client_nick() + " MODE :Not enough parameters\r\n";
-					send_message(it_client->fd, message);
-					return;
-				}
-				k_mode(take, my_channel, my_client_it, flag);
-			}
-			else if (mode == "t")
-				t_mode(take, my_channel, my_client_it);
-			else
-			{
-				//error
-				return;
+				mode.erase(0, 1);
 			}
 		}
 	}
