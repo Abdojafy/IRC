@@ -6,9 +6,9 @@ HEADERS = $(wildcard inc/*.hpp) $(wildcard src/**/*.hpp) $(wildcard src/server/*
 
 INC = inc/
 
-C++ = c++ -g
+C++ = c++
 
-CPP_FLAGS = -I$(INC)
+CPP_FLAGS = -Wall -Wextra -Werror -I$(INC)
 
 SRC =	$(wildcard *.cpp) $(wildcard src/*.cpp) $(wildcard src/**/*.cpp)
 OBJ =  $(addprefix objects/, $(SRC:.cpp=.o))

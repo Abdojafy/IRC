@@ -73,6 +73,7 @@ void Server::create_bind_listen(int port)
 void Server::accept_new_client()
 {
 	Client client;
+	memset(&addr_client, 0, sizeof(addr_client));
 	client_addr_len = sizeof(addr_client);
 	client_socket = accept(server_socket, (sockaddr *)&addr_client, (socklen_t*)&client_addr_len);
 	if (client_socket < 0)
